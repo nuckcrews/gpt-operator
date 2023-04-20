@@ -1,5 +1,5 @@
 
-def create_operation():
+def create_operation(type, name, description, url, path, params):
     pass
 
 
