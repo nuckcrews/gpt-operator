@@ -1,6 +1,10 @@
+<div align="center">
+  <img  src="https://user-images.githubusercontent.com/33267791/233712514-b47aabb4-1821-4f67-8214-33d6fe2d6402.png" alt="GPTOP Logo" />
+</div>
+
 # GPT Operator
 
-Empower your GPT applications with external operations.
+Empower your GPT applications with external operations
 
 ## Setup
 
