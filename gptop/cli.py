@@ -12,21 +12,6 @@ remove_namespace_command_name = "remove_namespace_operation"
 prompt_command_name = "prompt"
 
 
-command_prompt = {
-    'type': 'list',
-    'name': 'command',
-    'message': 'What command would you like to run? (Select One)',
-    'choices': [
-            create_command_name,
-            update_command_name,
-            get_command_name,
-            remove_command_name,
-            remove_namespace_command_name,
-            prompt_command_name
-    ]
-}
-
-
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     namespace = prompt_string('namespace', "Namespace:")
@@ -118,6 +103,8 @@ def main():
 
         keep_going = prompt_confirm('keep_going', 'Do you want to continue?')
 
+
+# MARK: -  Helper Methods
 
 def prompt_confirm(name, message, default=True):
     return prompt(
