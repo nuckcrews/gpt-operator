@@ -1,5 +1,6 @@
-from enum import Enum
 import json
+import requests
+from enum import Enum
 
 
 class OperationType(Enum):
@@ -38,14 +39,59 @@ class Operation():
         """
         Returns an instance of an operation from a dict object
         """
-        
+
         return Operation(obj['id'], obj['type'], obj['url'], obj['path'], obj.get('params'), obj.get('body'))
 
-    def execute(self):
+    def endpoint(self) -> str:
+        return self.url + self.path
+
+    def execute(self, params, body):
         """
         Executes the command.
 
         Returns: The response provided by the execution API
         """
 
-        return "Executed"
+        result = None
+
+        if self.type == OperationType.POST:
+            result = requests.post(
+                self.endpoint(),
+                headers={'Accept': 'application/json'},
+                params=params,
+                data=body
+            )
+
+        elif self.type == OperationType.GET:
+            result = requests.get(
+                self.endpoint(),
+                headers={'Accept': 'application/json'},
+                params=params,
+                data=body
+            )
+
+        elif self.type == OperationType.PUT:
+            result = requests.put(
+                self.endpoint(),
+                headers={'Accept': 'application/json'},
+                params=params,
+                data=body
+            )
+
+        elif self.type == OperationType.PATCH:
+            result = requests.patch(
+                self.endpoint(),
+                headers={'Accept': 'application/json'},
+                params=params,
+                data=body
+            )
+
+        elif self.type == OperationType.DELETE:
+            result = requests.delete(
+                self.endpoint(),
+                headers={'Accept': 'application/json'},
+                params=params,
+                data=body
+            )
+
+        return result.json()

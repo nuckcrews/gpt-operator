@@ -8,7 +8,7 @@ create_command_name = "create_operation"
 update_command_name = "update_operation"
 get_command_name = "get_operation"
 remove_command_name = "remove_operation"
-remove_namespace_command_name = "remove_namespace_operation"
+remove_namespace_command_name = "remove_namespace"
 prompt_command_name = "prompt"
 
 
