@@ -15,68 +15,97 @@ INDEX_NAME = os.getenv("INDEX_NAME")
 
 index = pinecone.Index(INDEX_NAME)
 
+class Utils():
 
-def create_operation(namespace, type, name, description, url, path, params):
-    id = str(uuid4())
+    @classmethod
+    def create_operation(namespace, type, name, description, url, path, params):
+        id = str(uuid4())
 
-    content = "; ".join([
-        f"Name: {name}",
-        f"description: {description}",
-        f"type: {type}",
-        f"url: {url}",
-        f"path: {path}",
-        f"params: {params}"
-    ])
+        content = "; ".join([
+            f"Name: {name}",
+            f"description: {description}",
+            f"type: {type}",
+            f"url: {url}",
+            f"path: {path}",
+            f"params: {params}"
+        ])
 
-    embedding = get_embedding(content, engine="text-embedding-ada-002")
+        embedding = get_embedding(content, engine="text-embedding-ada-002")
 
-    op = {
-        "id": id,
-        "name": name,
-        "description": description,
-        "type": type,
-        "url": url,
-        "path": path,
-        "params": params
-    }
+        op = {
+            "id": id,
+            "name": name,
+            "description": description,
+            "type": type,
+            "url": url,
+            "path": path,
+            "params": params
+        }
 
-    to_upsert = zip([id], [embedding], [op])
+        to_upsert = zip([id], [embedding], [op])
 
-    print(f"Operation:\n{op}")
+        index.upsert(vectors=list(to_upsert), namespace=namespace)
 
-    with open("ops_list.txt", "a") as ops_list:
-        ops_list.write(id)
+        print(f"Created operation:\n{op}")
 
-    index.upsert(vectors=list(to_upsert), namespace=namespace)
+        with open("ops_list.txt", "a") as ops_list:
+            ops_list.write(id)
 
-    pass
+    @classmethod
+    def get_operation(namespace: str, id: str):
+        result = index.fetch([id], namespace=namespace)
+        vectors = result.get('vectors')
+        vector = vectors.get(id)
 
+        if not vector:
+            return None
 
-def get_operation(namespace: str, id: str):
-    result = index.fetch([id], namespace=namespace)
-    vectors = result.get('vectors')
-    vector = vectors.get(id)
+        return vector.get('metadata')
 
-    return vector.get('metadata')
+    @classmethod
+    def update_operation(namespace, id, type, name, description, url, path, params):
+        content = "; ".join([
+            f"Name: {name}",
+            f"description: {description}",
+            f"type: {type}",
+            f"url: {url}",
+            f"path: {path}",
+            f"params: {params}"
+        ])
 
+        embedding = get_embedding(content, engine="text-embedding-ada-002")
 
-def update_operation(namespace: str, id: str):
-    pass
+        op = {
+            "id": id,
+            "name": name,
+            "description": description,
+            "type": type,
+            "url": url,
+            "path": path,
+            "params": params
+        }
 
+        to_upsert = zip([id], [embedding], [op])
 
-def remove_operation(namespace: str, id: str):
-    index.delete(ids=[id], namespace=namespace)
+        index.upsert(vectors=list(to_upsert), namespace=namespace)
 
-    with open("ops_list.txt", "r") as input:
-        with open("temp.txt", "w") as output:
-            for line in input:
-                if line.strip("\n") != id:
-                    output.write(line)
+        print(f"Updated operation: {op}")
 
-    os.replace('temp.txt', 'ops_list.txt')
+    @classmethod
+    def remove_operation(namespace: str, id: str):
+        index.delete(ids=[id], namespace=namespace)
 
-    print(f"Deleted: {id}")
+        with open("ops_list.txt", "r") as input:
+            with open("temp.txt", "w") as output:
+                for line in input:
+                    if line.strip("\n") != id:
+                        output.write(line)
 
-def remove_namespace(namespace: str):
-    index.delete(deleteAll='true', namespace=namespace)
-    print(f"Deleted: {namespace}")
+        os.replace('temp.txt', 'ops_list.txt')
+
+        print(f"Deleted: {id}")
+
+    @classmethod
+    def remove_namespace(namespace: str):
+        index.delete(deleteAll='true', namespace=namespace)
+        print(f"Deleted: {namespace}")

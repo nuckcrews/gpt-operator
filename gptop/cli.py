@@ -1,5 +1,5 @@
 from PyInquirer import prompt
-from gptop.operation_utils import create_operation, get_operation, update_operation, remove_operation, remove_namespace
+from gptop.operation_utils import Utils
 
 
 create_command_name = "create_operation"
@@ -23,37 +23,6 @@ command_prompt = {
             prompt_command_name
     ]
 }
-
-
-def prompt_confirm(name, message, default=True):
-    return prompt(
-        {
-            'type': 'confirm',
-            'name': name,
-            'message': message,
-            'default': default
-        }
-    ).get(name)
-
-def prompt_string(name, message):
-    return prompt(
-        {
-            'type': 'input',
-            'name': name,
-            'message': message
-        }
-    ).get(name)
-
-
-def prompt_list(name, message, choices):
-    return prompt(
-        {
-            'type': 'list',
-            'name': name,
-            'message': message,
-            'choices': choices
-        }
-    ).get(name)
 
 
 def main():
@@ -90,29 +59,87 @@ def main():
             path = prompt_string('path', 'Path:')
             params = prompt_string('params', "Parameters:")
 
-            create_operation(namespace, type, name, description, url, path, params)
+            Utils.create_operation(namespace, type, name, description, url, path, params)
 
         elif command == get_command_name:
             id = prompt_string('id', "Operation ID:")
-            result = get_operation(namespace=namespace, id=id)
-            print(result)
+            result = Utils.get_operation(namespace=namespace, id=id)
+
+            if not result:
+                print("Operation does not exist")
+            else:
+                print(result)
 
         elif command == update_command_name:
-            update_operation()
+            id = prompt_string('id', "Operation ID:")
+            op = Utils.get_operation(namespace=namespace, id=id)
+
+            if op:
+                type = prompt_list(
+                    'type',
+                    'Type (Select one):', [
+                        'POST',
+                        'GET',
+                        'PUT',
+                        'PATCH',
+                        'DELETE'
+                    ]
+                )
+                name = prompt_string('name', "Name:")
+                description = prompt_string('description', "Description:")
+                url = prompt_string('url', 'URL:')
+                path = prompt_string('path', 'Path:')
+                params = prompt_string('params', "Parameters:")
+                Utils.update_operation(namespace, id, type, name, description, url, path, params)
+            else:
+                print("Operation does not exist")
 
         elif command == remove_command_name:
             id = prompt_string('id', "Operation ID:")
-            remove_operation(namespace=namespace, id=id)
+            Utils.remove_operation(namespace=namespace, id=id)
 
         elif command == remove_namespace_command_name:
             confirmed = prompt_confirm('confirmed', 'Are you sure?', False)
             if confirmed:
-                remove_namespace(namespace=namespace)
+                Utils.remove_namespace(namespace=namespace)
+
+        elif command == prompt_command_name:
+            prompt = prompt_string('prompt', "Prompt:")
+
+
 
         keep_going = prompt_confirm('keep_going', 'Do you want to continue?')
 
 
+def prompt_confirm(name, message, default=True):
+    return prompt(
+        {
+            'type': 'confirm',
+            'name': name,
+            'message': message,
+            'default': default
+        }
+    ).get(name)
 
+def prompt_string(name, message):
+    return prompt(
+        {
+            'type': 'input',
+            'name': name,
+            'message': message
+        }
+    ).get(name)
+
+
+def prompt_list(name, message, choices):
+    return prompt(
+        {
+            'type': 'list',
+            'name': name,
+            'message': message,
+            'choices': choices
+        }
+    ).get(name)
 
 if __name__ == "__main__":
     main()
