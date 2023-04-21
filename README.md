@@ -6,6 +6,16 @@
 
 Empower your GPT applications with external operations
 
+## Features
+
+* Execute operations based on a given prompt
+* Create, update, and remove operations in vector database
+
+# Requirements
+
+* Pinecone Vector Database Index
+* OpenAI access to gpt-4
+
 ## Setup
 
 If you don’t have Python installed, [install it from here](https://www.python.org/downloads/)
