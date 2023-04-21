@@ -3,12 +3,12 @@ import requests
 from enum import Enum
 
 
-class OperationType(Enum):
-    POST = 1
-    GET = 2
-    PUT = 3
-    PATCH = 4
-    DELETE = 5
+class OperationType(str, Enum):
+    POST = "POST"
+    GET = "GET"
+    PUT = "PUT"
+    PATCH = "PATCH"
+    DELETE = "DELETE"
 
 
 class Operation():
@@ -53,6 +53,7 @@ class Operation():
         result = None
 
         if self.type == OperationType.POST:
+            print("posting it")
             result = requests.post(
                 self.endpoint(),
                 headers={'Accept': 'application/json'},
@@ -91,5 +92,8 @@ class Operation():
                 params=params,
                 data=body
             )
+
+        if not result:
+            return None
 
         return result.json()
