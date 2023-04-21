@@ -22,6 +22,7 @@ class Operator():
 
         Returns: Operation
         """
+
         op = Utils.get_operation(self.namespace, id)
         if not op:
             raise ValueError("Operation does not exist")
@@ -57,9 +58,19 @@ class Operator():
 
         Returns: Value from operation
         """
+
         return operation.execute()
 
     def pick(self, prompt: str, operations: list[Operation]) -> list[Operation]:
+        """
+        Given a prompt and a list of operations, the LLM selects
+        the operation that best fits the prompt.
+        - prompt: The prompt to base the selection off of
+        - operations: The list of operations to choose from.
+
+        Returns: The identifier of the operation.
+        """
+
         clean_ops = [op.__dict__ for op in operations]
         response = ChatCompletion.create(
             model="gpt-4",
@@ -77,6 +88,14 @@ class Operator():
         return choice.get("message").get("content")
 
     def handle(self, prompt: str):
+        """
+        Asks the operator to find and execute relevant
+        operations based on the provided prompt.
+        - prompt: The prompt the operator should handle
+
+        Returns: The output generated from the executed operation(s)
+        """
+        
         print("Finding operations...")
         operations = self.find(prompt=prompt)
         if not operations:
