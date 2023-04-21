@@ -1,5 +1,6 @@
 from PyInquirer import prompt
 from gptop.operation_utils import Utils
+from gptop.operator import Operator
 
 
 create_command_name = "create_operation"
@@ -59,7 +60,8 @@ def main():
             path = prompt_string('path', 'Path:')
             params = prompt_string('params', "Parameters:")
 
-            Utils.create_operation(namespace, type, name, description, url, path, params)
+            Utils.create_operation(namespace, type, name,
+                                   description, url, path, params)
 
         elif command == get_command_name:
             id = prompt_string('id', "Operation ID:")
@@ -83,14 +85,18 @@ def main():
                         'PUT',
                         'PATCH',
                         'DELETE'
-                    ]
+                    ],
+                    op.get('type')
                 )
-                name = prompt_string('name', "Name:")
-                description = prompt_string('description', "Description:")
-                url = prompt_string('url', 'URL:')
-                path = prompt_string('path', 'Path:')
-                params = prompt_string('params', "Parameters:")
-                Utils.update_operation(namespace, id, type, name, description, url, path, params)
+                name = prompt_string('name', "Name:", op.get('name'))
+                description = prompt_string(
+                    'description', "Description:", op.get('description'))
+                url = prompt_string('url', 'URL:', op.get('url'))
+                path = prompt_string('path', 'Path:', op.get('path'))
+                params = prompt_string(
+                    'params', "Parameters:", op.get('params'))
+                Utils.update_operation(
+                    namespace, id, type, name, description, url, path, params)
             else:
                 print("Operation does not exist")
 
@@ -104,9 +110,9 @@ def main():
                 Utils.remove_namespace(namespace=namespace)
 
         elif command == prompt_command_name:
-            prompt = prompt_string('prompt', "Prompt:")
-
-
+            pmt = prompt_string('pmt', "Prompt:")
+            operator = Operator(namespace=namespace)
+            operator.handle(pmt)
 
         keep_going = prompt_confirm('keep_going', 'Do you want to continue?')
 
@@ -121,25 +127,29 @@ def prompt_confirm(name, message, default=True):
         }
     ).get(name)
 
-def prompt_string(name, message):
+
+def prompt_string(name, message, default=""):
     return prompt(
         {
             'type': 'input',
             'name': name,
-            'message': message
+            'message': message,
+            'default': default
         }
     ).get(name)
 
 
-def prompt_list(name, message, choices):
+def prompt_list(name, message, choices, default=None):
     return prompt(
         {
             'type': 'list',
             'name': name,
             'message': message,
-            'choices': choices
+            'choices': choices,
+            'default': default
         }
     ).get(name)
+
 
 if __name__ == "__main__":
     main()

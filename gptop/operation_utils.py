@@ -1,15 +1,7 @@
 import os
 from uuid import uuid4
 import pinecone
-import openai
 from openai.embeddings_utils import get_embedding
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-pinecone.init(
-    api_key=os.getenv("PINECONE_API_KEY"),
-    environment=os.getenv("PINECONE_REGION")
-)
 
 INDEX_NAME = os.getenv("INDEX_NAME")
 
@@ -18,7 +10,7 @@ index = pinecone.Index(INDEX_NAME)
 class Utils():
 
     @classmethod
-    def create_operation(namespace, type, name, description, url, path, params):
+    def create_operation(self, namespace, type, name, description, url, path, params):
         id = str(uuid4())
 
         content = "; ".join([
@@ -52,7 +44,7 @@ class Utils():
             ops_list.write(id)
 
     @classmethod
-    def get_operation(namespace: str, id: str):
+    def get_operation(self, namespace: str, id: str):
         result = index.fetch([id], namespace=namespace)
         vectors = result.get('vectors')
         vector = vectors.get(id)
@@ -63,7 +55,7 @@ class Utils():
         return vector.get('metadata')
 
     @classmethod
-    def update_operation(namespace, id, type, name, description, url, path, params):
+    def update_operation(self, namespace, id, type, name, description, url, path, params):
         content = "; ".join([
             f"Name: {name}",
             f"description: {description}",
@@ -92,7 +84,7 @@ class Utils():
         print(f"Updated operation: {op}")
 
     @classmethod
-    def remove_operation(namespace: str, id: str):
+    def remove_operation(self, namespace: str, id: str):
         index.delete(ids=[id], namespace=namespace)
 
         with open("ops_list.txt", "r") as input:
@@ -106,6 +98,6 @@ class Utils():
         print(f"Deleted: {id}")
 
     @classmethod
-    def remove_namespace(namespace: str):
+    def remove_namespace(self, namespace: str):
         index.delete(deleteAll='true', namespace=namespace)
         print(f"Deleted: {namespace}")
