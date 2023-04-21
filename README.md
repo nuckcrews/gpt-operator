@@ -36,3 +36,15 @@ Empower your GPT applications with external operations.
 7. Add your [OpenAI API key](https://beta.openai.com/account/api-keys) to the newly created `.env` file
 
 8. Add your [Pinecone API key and Region](https://docs.pinecone.io/docs/quickstart) to the newly created `.env` file
+
+## Usage
+
+1. Run the application
+
+    ```bash
+    $ ./run.sh
+    ```
+
+## Contributing
+
+All contributions are welcome! Reach out for more information.
