@@ -1,6 +1,7 @@
 from enum import Enum
 import json
 
+
 class OperationType(Enum):
     POST = 1
     GET = 2
@@ -12,6 +13,16 @@ class OperationType(Enum):
 class Operation():
 
     def __init__(self, id: str, type: OperationType, url: str, path: str, params: str, body: any):
+        """
+        Holds the properties on an operation prepared for execution
+        - id: The identifier of the operation
+        - type: The type of operation
+        - url: The url of the operation
+        - path: The path to the operation
+        - params: The params of the operation
+        - body: The body of the operation
+        """
+
         self.id = id
         self.type = type
         self.url = url
