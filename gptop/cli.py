@@ -1,3 +1,4 @@
+import os
 from PyInquirer import prompt
 from gptop.operation_utils import Utils
 from gptop.operator import Operator
@@ -27,6 +28,7 @@ command_prompt = {
 
 
 def main():
+    os.system('cls' if os.name == 'nt' else 'clear')
     namespace = prompt_string('namespace', "Namespace:")
 
     keep_going = True

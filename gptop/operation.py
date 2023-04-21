@@ -36,3 +36,6 @@ class Operation():
     @classmethod
     def from_obj(self, obj):
         return Operation(obj['id'], obj['type'], obj['url'], obj['path'], obj.get('params'), obj.get('body'))
+
+    def execute(self):
+        return "Executed"

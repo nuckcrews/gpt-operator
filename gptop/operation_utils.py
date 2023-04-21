@@ -41,7 +41,7 @@ class Utils():
         print(f"Created operation:\n{op}")
 
         with open("ops_list.txt", "a") as ops_list:
-            ops_list.write(id)
+            ops_list.write("\n" + id)
 
     @classmethod
     def get_operation(self, namespace: str, id: str):

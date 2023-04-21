@@ -1,6 +1,8 @@
 import os
+import json
 import pinecone
 from openai.embeddings_utils import get_embedding
+from openai import ChatCompletion
 from gptop.operation import Operation
 from gptop.operation_utils import Utils
 
@@ -50,13 +52,30 @@ class Operator():
 
         return operations
 
-    def execute(self, operations: list[Operation]):
+    def execute(self, operation: Operation):
         """
-        Executes a given transaction with the provided parameters.
+        Executes the provided operation.
 
         Returns: Value from operation
         """
-        pass
+        return operation.execute()
+
+    def pick(self, prompt: str, operations: list[Operation]) -> list[Operation]:
+        clean_ops = [op.__dict__ for op in operations]
+        response = ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Given a list of operations, pick one that would best contribute to the user's prompt."},
+                {"role": "system", "content": "Output the ID of the operation."},
+                {"role": "user", "content": f"Operations: {json.dumps(clean_ops)}"},
+                {"role": "user", "content": prompt},
+                {"role": "user", "content": "Output the ID of the operation and nothing more."}
+            ],
+            temperature=0.0
+        )
+
+        choice = response.get("choices")[0]
+        return choice.get("message").get("content")
 
     def handle(self, prompt: str):
         print("Finding operations...")
@@ -67,4 +86,24 @@ class Operator():
 
         print(f"Found {operations} operations")
 
+        print("Picking an operation...")
+        op_id = self.pick(prompt=prompt, operations=operations)
 
+        print(f"GPT output: {op_id}")
+
+        operation = None
+        for op in operations:
+            if op.id == op_id:
+                operation = op
+                break
+
+        if not operation:
+            print("No operation picked")
+            return
+
+        print(f"Picked operation: {operation}")
+
+        print(f"Executing operation...")
+        output = self.execute(operation=operation)
+
+        print(f"Execution output: {output}")
