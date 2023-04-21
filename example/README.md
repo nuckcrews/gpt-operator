@@ -30,4 +30,4 @@ A simple FLASK application to simulate an operation
    $ python application.py
    ```
 
-Note: This is for testing purposes and should not be deployed in a production environment.
+Note: This is for testing purposes and should not be deployed to a production environment.

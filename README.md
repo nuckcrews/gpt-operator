@@ -59,6 +59,8 @@ If you don’t have Python installed, [install it from here](https://www.python.
     $ ./run.sh
     ```
 
+To set up an operation on your machine, please see the [example](https://github.com/ncrews35/gpt-operator/tree/mainline/example).
+
 ## Contributing
 
 All contributions are welcome! Reach out for more information.
