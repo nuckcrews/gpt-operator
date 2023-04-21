@@ -1,4 +1,5 @@
 import os
+import json
 from uuid import uuid4
 import pinecone
 from openai.embeddings_utils import get_embedding
@@ -12,7 +13,7 @@ class Utils():
     """
 
     @classmethod
-    def create_operation(self, namespace, type, name, description, url, path, params, body):
+    def create_operation(self, namespace, type, name, description, url, path, schema):
         """
         Creates an operation, creates an embedding from it, and
         stores it in a vector database.
@@ -20,7 +21,7 @@ class Utils():
         - type: The type of operation
         - url: The url of the operation
         - path: The path to the operation
-        - params: The params of the operation
+        - schema: The schema of the operation
         - body: The body of the operation
 
         Also writes the operation ID to the `ops_list.txt` file
@@ -34,7 +35,7 @@ class Utils():
             f"type: {type}",
             f"url: {url}",
             f"path: {path}",
-            f"params: {params}"
+            f"schema: {schema}"
         ])
 
         embedding = get_embedding(content, engine="text-embedding-ada-002")
@@ -46,7 +47,7 @@ class Utils():
             "type": type,
             "url": url,
             "path": path,
-            "params": params
+            "schema": json.dumps(json.loads(schema), separators=(',', ': '))
         }
 
         to_upsert = zip([id], [embedding], [op])
@@ -78,7 +79,7 @@ class Utils():
         return vector.get('metadata')
 
     @classmethod
-    def update_operation(self, namespace, id, type, name, description, url, path, params):
+    def update_operation(self, namespace, id, type, name, description, url, path, schema):
         """
         Updates an existing operation, creates a new embedding, and
         overrides the existing operation in the vector database.
@@ -87,8 +88,7 @@ class Utils():
         - type: The type of operation
         - url: The url of the operation
         - path: The path to the operation
-        - params: The params of the operation
-        - body: The body of the operation
+        - schema: The schema of the operation
         """
 
         content = "; ".join([
@@ -97,7 +97,7 @@ class Utils():
             f"type: {type}",
             f"url: {url}",
             f"path: {path}",
-            f"params: {params}"
+            f"schema: {schema}"
         ])
 
         embedding = get_embedding(content, engine="text-embedding-ada-002")
@@ -109,7 +109,7 @@ class Utils():
             "type": type,
             "url": url,
             "path": path,
-            "params": params
+            "schema": json.dumps(json.loads(schema), separators=(',', ': '))
         }
 
         to_upsert = zip([id], [embedding], [op])

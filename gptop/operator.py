@@ -5,6 +5,7 @@ from openai.embeddings_utils import get_embedding
 from openai import ChatCompletion
 from gptop.operation import Operation
 from gptop.operation_utils import Utils
+from gptop.utils import llm_response, llm_json
 
 
 index = pinecone.Index(os.getenv("INDEX_NAME"))
@@ -52,15 +53,6 @@ class Operator():
 
         return operations
 
-    def execute(self, operation: Operation):
-        """
-        Executes the provided operation.
-
-        Returns: Value from operation
-        """
-
-        return operation.execute()
-
     def pick(self, prompt: str, operations: list[Operation]) -> list[Operation]:
         """
         Given a prompt and a list of operations, the LLM selects
@@ -78,14 +70,57 @@ class Operator():
                 {"role": "system", "content": "Given a list of operations, pick one that would best contribute to the user's prompt."},
                 {"role": "system", "content": "Output the ID of the operation."},
                 {"role": "user", "content": f"Operations: {json.dumps(clean_ops)}"},
-                {"role": "user", "content": prompt},
+                {"role": "user", "content": f"Prompt: {prompt}"},
                 {"role": "user", "content": "Output the ID of the operation and nothing more."}
             ],
             temperature=0.0
         )
 
-        choice = response.get("choices")[0]
-        return choice.get("message").get("content")
+        op_id = llm_response(response)
+        operation = None
+        for op in operations:
+            if op.id == op_id:
+                operation = op
+                break
+
+        return operation
+
+    def prepare(self, prompt: str, operation: Operation):
+        """
+        Generates a payload for the operation
+        based on the prompt and operation schema.
+        - prompt: The prompt to use
+        - operation: The operation to prepare for
+
+        Returns: JSON object with params and body
+        """
+
+        response = ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": """
+                Give an operation with a predefined schema and a user prompt,
+                provide parameter and body values to send to the operation based on the prompt.
+                """.replace("\n", " ")},
+                {"role": "system", "content": "Output in JSON format"},
+                {"role": "user", "content": f"Operation: {operation.__dict__}"},
+                {"role": "user", "content": f"Prompt: {prompt}"},
+                {"role": "user", "content": "Output the params and body in JSON format and nothing more."}
+            ],
+            temperature=0.0
+        )
+
+        return llm_json(response)
+
+
+    def execute(self, operation: Operation, params: any, body: any):
+        """
+        Executes the provided operation.
+
+        Returns: Value from operation
+        """
+
+        return operation.execute(params=params, body=body)
 
     def handle(self, prompt: str):
         """
@@ -95,33 +130,27 @@ class Operator():
 
         Returns: The output generated from the executed operation(s)
         """
-        
+
         print("Finding operations...")
         operations = self.find(prompt=prompt)
         if not operations:
             print("Found no operations")
             return
-
         print(f"Found {operations} operations")
 
         print("Picking an operation...")
-        op_id = self.pick(prompt=prompt, operations=operations)
-
-        print(f"GPT output: {op_id}")
-
-        operation = None
-        for op in operations:
-            if op.id == op_id:
-                operation = op
-                break
-
+        operation = self.pick(prompt=prompt, operations=operations)
         if not operation:
             print("No operation picked")
             return
-
         print(f"Picked operation: {operation}")
 
-        print(f"Executing operation...")
-        output = self.execute(operation=operation)
+        print(f"Preparing for execution...")
+        data = self.prepare(prompt=prompt, operation=operation)
+        print(f"Operation prepared with data: {data}")
 
+        print(f"Executing operation...")
+        output = self.execute(operation=operation, params=data.get("params"), body=data.get("body"))
         print(f"Execution output: {output}")
+
+        return output

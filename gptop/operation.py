@@ -13,23 +13,21 @@ class OperationType(Enum):
 
 class Operation():
 
-    def __init__(self, id: str, type: OperationType, url: str, path: str, params: str, body: any):
+    def __init__(self, id: str, type: OperationType, url: str, path: str, schema: any):
         """
         Holds the properties on an operation prepared for execution
         - id: The identifier of the operation
         - type: The type of operation
         - url: The url of the operation
         - path: The path to the operation
-        - params: The params of the operation
-        - body: The body of the operation
+        - schema: The schema of the operation
         """
 
         self.id = id
         self.type = type
         self.url = url
         self.path = path
-        self.params = params
-        self.body = body
+        self.schema = schema
 
     def __repr__(self) -> str:
         return json.dumps(self.__dict__)
@@ -40,7 +38,7 @@ class Operation():
         Returns an instance of an operation from a dict object
         """
 
-        return Operation(obj['id'], obj['type'], obj['url'], obj['path'], obj.get('params'), obj.get('body'))
+        return Operation(obj['id'], obj['type'], obj['url'], obj['path'], obj.get('schema'))
 
     def endpoint(self) -> str:
         return self.url + self.path

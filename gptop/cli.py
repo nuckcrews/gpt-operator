@@ -45,10 +45,10 @@ def main():
             description = prompt_string('description', "Description:")
             url = prompt_string('url', 'URL:')
             path = prompt_string('path', 'Path:')
-            params = prompt_string('params', "Parameters:")
+            schema = prompt_string('schema', "Schema:")
 
             Utils.create_operation(namespace, type, name,
-                                   description, url, path, params)
+                                   description, url, path, schema)
 
         elif command == get_command_name:
             id = prompt_string('id', "Operation ID:")
@@ -80,10 +80,9 @@ def main():
                     'description', "Description:", op.get('description'))
                 url = prompt_string('url', 'URL:', op.get('url'))
                 path = prompt_string('path', 'Path:', op.get('path'))
-                params = prompt_string(
-                    'params', "Parameters:", op.get('params'))
-                Utils.update_operation(
-                    namespace, id, type, name, description, url, path, params)
+                schema = prompt_string('schema', "Schema:", op.get('schema'))
+
+                Utils.update_operation(namespace, id, type, name, description, url, path, schema)
             else:
                 print("Operation does not exist")
 
@@ -117,13 +116,13 @@ def prompt_confirm(name, message, default=True):
     ).get(name)
 
 
-def prompt_string(name, message, default=""):
+def prompt_string(name, message, default=None):
     return prompt(
         {
             'type': 'input',
             'name': name,
             'message': message,
-            'default': default
+            'default': default if default else ""
         }
     ).get(name)
 
