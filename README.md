@@ -11,7 +11,7 @@ Empower your GPT applications with external operations
 * Execute operations based on a given prompt
 * Create, update, and remove operations in vector database
 
-# Requirements
+## Requirements
 
 * Pinecone Vector Database Index
 * OpenAI access to gpt-4
