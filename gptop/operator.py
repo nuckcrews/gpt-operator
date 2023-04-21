@@ -6,9 +6,8 @@ from openai import ChatCompletion
 from gptop.operation import Operation
 from gptop.operation_utils import Utils
 
-INDEX_NAME = os.getenv("INDEX_NAME")
 
-index = pinecone.Index(INDEX_NAME)
+index = pinecone.Index(os.getenv("INDEX_NAME"))
 
 
 class Operator():

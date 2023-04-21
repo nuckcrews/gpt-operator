@@ -3,14 +3,29 @@ from uuid import uuid4
 import pinecone
 from openai.embeddings_utils import get_embedding
 
-INDEX_NAME = os.getenv("INDEX_NAME")
+index = pinecone.Index(os.getenv("INDEX_NAME"))
 
-index = pinecone.Index(INDEX_NAME)
 
 class Utils():
+    """
+    A set of utility objects for managing operations
+    """
 
     @classmethod
-    def create_operation(self, namespace, type, name, description, url, path, params):
+    def create_operation(self, namespace, type, name, description, url, path, params, body):
+        """
+        Creates an operation, creates an embedding from it, and
+        stores it in a vector database.
+        - namespace: The namespace to store the embedding
+        - type: The type of operation
+        - url: The url of the operation
+        - path: The path to the operation
+        - params: The params of the operation
+        - body: The body of the operation
+
+        Also writes the operation ID to the `ops_list.txt` file
+        """
+
         id = str(uuid4())
 
         content = "; ".join([
@@ -45,6 +60,14 @@ class Utils():
 
     @classmethod
     def get_operation(self, namespace: str, id: str):
+        """
+        Fetches an existing operation from the vector database.
+        - namespace: The namespace to store the embedding
+        - id: The identifier of the operation
+
+        Returns: The operation represented in json
+        """
+
         result = index.fetch([id], namespace=namespace)
         vectors = result.get('vectors')
         vector = vectors.get(id)
@@ -56,6 +79,18 @@ class Utils():
 
     @classmethod
     def update_operation(self, namespace, id, type, name, description, url, path, params):
+        """
+        Updates an existing operation, creates a new embedding, and
+        overrides the existing operation in the vector database.
+        - namespace: The namespace to store the embedding
+        - id: The identifier of the operation
+        - type: The type of operation
+        - url: The url of the operation
+        - path: The path to the operation
+        - params: The params of the operation
+        - body: The body of the operation
+        """
+
         content = "; ".join([
             f"Name: {name}",
             f"description: {description}",
@@ -85,6 +120,14 @@ class Utils():
 
     @classmethod
     def remove_operation(self, namespace: str, id: str):
+        """
+        Removes an existing operation from the vector database.
+        - namespace: The namespace to store the embedding
+        - id: The identifier of the operation
+
+        Also removes the operation ID from `ops_list.txt` file.
+        """
+
         index.delete(ids=[id], namespace=namespace)
 
         with open("ops_list.txt", "r") as input:
@@ -99,5 +142,10 @@ class Utils():
 
     @classmethod
     def remove_namespace(self, namespace: str):
+        """
+        [DANGEROUS] Deletes an entire namespace of operations.
+        - namespace: The namespace in the vector database
+        """
+
         index.delete(deleteAll='true', namespace=namespace)
         print(f"Deleted: {namespace}")

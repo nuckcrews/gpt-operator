@@ -35,7 +35,16 @@ class Operation():
 
     @classmethod
     def from_obj(self, obj):
+        """
+        Returns an instance of an operation from a dict object
+        """
         return Operation(obj['id'], obj['type'], obj['url'], obj['path'], obj.get('params'), obj.get('body'))
 
     def execute(self):
+        """
+        Executes the command.
+
+        Returns: The response provided by the execution API
+        """
+
         return "Executed"
