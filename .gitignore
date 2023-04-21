@@ -17,6 +17,9 @@ build/
 .DS_STORE
 
 .env
+.idea
 data/
 
 *.keys.*
+
+ops_list.txt
