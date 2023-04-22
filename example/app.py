@@ -41,6 +41,16 @@ def get_quarterback():
             if qb.get("id") == id:
                 return qb, 200
 
+@app.route("/search", methods=['GET'])
+def search_quarterback():
+    quarterback = request.args.get("qb").lower()
+
+    with open('data.json', 'r') as qbs_obj:
+        obj = json.loads(qbs_obj.read())
+        for qb in obj:
+            if qb.get("quarterback").lower() == quarterback:
+                return qb, 200
+
     return {"error": "QB does not exist"}, 200
 
 
