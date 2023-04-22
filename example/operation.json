@@ -1,0 +1,33 @@
+{
+    "type": "POST",
+    "name": "Create embedding",
+    "description": "Creates an embedding",
+    "url": "http://127.0.0.1:5000",
+    "path": "/create",
+    "schema": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+            "body": {
+                "type": "object",
+                "properties": {
+                    "namespace": {
+                        "type": "string",
+                        "description": "The namespace of the vector database index"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "The content to embed"
+                    }
+                },
+                "required": [
+                    "namespace",
+                    "content"
+                ]
+            }
+        },
+        "required": [
+            "body"
+        ]
+    }
+}

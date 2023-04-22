@@ -1,4 +1,5 @@
 import os
+import json
 from PyInquirer import prompt
 from gptop.operation_utils import Utils
 from gptop.operator import Operator
@@ -31,21 +32,37 @@ def main():
         )
 
         if command == create_command_name:
-            type = prompt_list(
-                'type',
-                'Type (Select one):', [
-                    'POST',
-                    'GET',
-                    'PUT',
-                    'PATCH',
-                    'DELETE'
-                ]
-            )
-            name = prompt_string('name', "Name:")
-            description = prompt_string('description', "Description:")
-            url = prompt_string('url', 'URL:')
-            path = prompt_string('path', 'Path:')
-            schema = prompt_string('schema', "Schema:")
+            from_file = prompt_confirm('from_file', "Create from file?")
+            if from_file:
+                file_path = prompt_string('file_path', "Path to file:")
+                file = open(file_path, "r")
+                obj = file.read()
+                print(obj)
+                obj = json.loads(obj)
+                file.close()
+
+                type = obj.get("type")
+                name = obj.get("name")
+                description = obj.get("description")
+                url = obj.get("url")
+                path = obj.get("path")
+                schema = json.dumps(obj.get("schema"), separators=(',', ': '))
+            else:
+                type = prompt_list(
+                    'type',
+                    'Type (Select one):', [
+                        'POST',
+                        'GET',
+                        'PUT',
+                        'PATCH',
+                        'DELETE'
+                    ]
+                )
+                name = prompt_string('name', "Name:")
+                description = prompt_string('description', "Description:")
+                url = prompt_string('url', 'URL:')
+                path = prompt_string('path', 'Path:')
+                schema = prompt_string('schema', "Schema:")
 
             Utils.create_operation(namespace, type, name,
                                    description, url, path, schema)

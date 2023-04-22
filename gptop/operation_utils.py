@@ -109,7 +109,7 @@ class Utils():
             "type": type,
             "url": url,
             "path": path,
-            "schema": json.dumps(json.loads(schema), separators=(',', ': '))
+            "schema": schema
         }
 
         to_upsert = zip([id], [embedding], [op])

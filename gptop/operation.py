@@ -53,7 +53,6 @@ class Operation():
         result = None
 
         if self.type == OperationType.POST:
-            print("posting it")
             result = requests.post(
                 self.endpoint(),
                 headers={'Accept': 'application/json'},
