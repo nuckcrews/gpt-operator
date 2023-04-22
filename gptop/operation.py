@@ -13,11 +13,13 @@ class OperationType(str, Enum):
 
 class Operation():
 
-    def __init__(self, id: str, type: OperationType, url: str, path: str, schema: any):
+    def __init__(self, id: str, type: OperationType, name: str, description: str, url: str, path: str, schema: any):
         """
         Holds the properties on an operation prepared for execution
         - id: The identifier of the operation
         - type: The type of operation
+        - name: The name of the operation
+        - description: The description of the operation
         - url: The url of the operation
         - path: The path to the operation
         - schema: The schema of the operation
@@ -25,6 +27,8 @@ class Operation():
 
         self.id = id
         self.type = type
+        self.name = name
+        self.description = description
         self.url = url
         self.path = path
         self.schema = schema
@@ -38,7 +42,8 @@ class Operation():
         Returns an instance of an operation from a dict object
         """
 
-        return Operation(obj['id'], obj['type'], obj['url'], obj['path'], obj.get('schema'))
+        return Operation(obj['id'], obj['type'], obj['name'], obj['description'],
+                         obj['url'], obj['path'], obj['schema'])
 
     def endpoint(self) -> str:
         return self.url + self.path

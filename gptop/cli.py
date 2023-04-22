@@ -1,8 +1,8 @@
 import os
 import json
 from PyInquirer import prompt
-from gptop.operation_utils import Utils
-from gptop.operator import Operator
+from .operation_utils import Utils
+from .operator import Operator
 
 
 create_command_name = "create_operation"
@@ -99,7 +99,8 @@ def main():
                 path = prompt_string('path', 'Path:', op.get('path'))
                 schema = prompt_string('schema', "Schema:", op.get('schema'))
 
-                Utils.update_operation(namespace, id, type, name, description, url, path, schema)
+                Utils.update_operation(
+                    namespace, id, type, name, description, url, path, schema)
             else:
                 print("Operation does not exist")
 

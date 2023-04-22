@@ -3,9 +3,9 @@ import json
 import pinecone
 from openai.embeddings_utils import get_embedding
 from openai import ChatCompletion
-from gptop.operation import Operation
-from gptop.operation_utils import Utils
-from gptop.utils import llm_response, llm_json
+from .operation import Operation
+from .operation_utils import Utils
+from .utils import llm_response, llm_json, announce
 
 
 index = pinecone.Index(os.getenv("INDEX_NAME"))
@@ -67,7 +67,9 @@ class Operator():
         response = ChatCompletion.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "Given a list of operations, pick one that would best contribute to the user's prompt."},
+                {"role": "system", "content": """
+                Given a list of operations, pick one that would best contribute to the user's prompt.
+                """.replace("\n", " ")},
                 {"role": "system", "content": "Output the ID of the operation."},
                 {"role": "user", "content": f"Operations: {json.dumps(clean_ops)}"},
                 {"role": "user", "content": f"Prompt: {prompt}"},
@@ -112,7 +114,6 @@ class Operator():
 
         return llm_json(response)
 
-
     def execute(self, operation: Operation, params: any, body: any):
         """
         Executes the provided operation.
@@ -121,6 +122,30 @@ class Operator():
         """
 
         return operation.execute(params=params, body=body)
+
+    def react(self, prompt: str, operation: Operation, values: str, result: str) -> str:
+        """
+        Reacts to the operation execution based on
+        the original prompt
+
+        Returns: The LLM reaction response
+        """
+        response = ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": """
+                Given a the original prompt and the execution result of an operation that followed,
+                respond to the prompt based on the execution result.
+                """.replace("\n", " ")},
+                {"role": "user", "content": f"Prompt: {prompt}"},
+                {"role": "user", "content": f"Operation: {operation.__dict__}"},
+                {"role": "user", "content": f"Values passed to operation: {values}"},
+                {"role": "user", "content": f"Execution result: {result}"}
+            ],
+            temperature=0.0
+        )
+
+        return llm_response(response)
 
     def handle(self, prompt: str):
         """
@@ -136,21 +161,25 @@ class Operator():
         if not operations:
             print("Found no operations")
             return
-        print(f"Found {operations} operations")
+        print(f"Found {len(operations)} operations")
 
         print("Picking an operation...")
         operation = self.pick(prompt=prompt, operations=operations)
         if not operation:
             print("No operation picked")
             return
-        print(f"Picked operation: {operation}")
+        announce(operation.name, prefix="Picked operation:\n")
 
-        print(f"Preparing for execution...")
+        print("Preparing for execution...")
         data = self.prepare(prompt=prompt, operation=operation)
-        print(f"Operation prepared with data: {data}")
+        announce(data, prefix="Operation prepared with data:\n")
 
-        print(f"Executing operation...")
-        output = self.execute(operation=operation, params=data.get("params"), body=data.get("body"))
-        print(f"Execution output: {output}")
+        print("Executing operation...")
+        result = self.execute(operation=operation, params=data.get(
+            "params"), body=data.get("body"))
+        announce(result, prefix="Execution result:\n")
 
-        return output
+        print("Reacting to result...")
+        reaction = self.react(prompt=prompt, operation=operation,
+                              values=json.dumps(data), result=result)
+        announce(reaction, "Reaction:\n")
