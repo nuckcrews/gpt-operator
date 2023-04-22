@@ -55,25 +55,34 @@ class Operation():
         if self.type == OperationType.POST:
             result = requests.post(
                 self.endpoint(),
-                headers={'Accept': 'application/json'},
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
                 params=params,
-                data=body
+                data=json.dumps(body).encode('utf-8')
             )
 
         elif self.type == OperationType.GET:
             result = requests.get(
                 self.endpoint(),
-                headers={'Accept': 'application/json'},
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
                 params=params,
-                data=body
+                data=json.dumps(body).encode('utf-8')
             )
 
         elif self.type == OperationType.PUT:
             result = requests.put(
                 self.endpoint(),
-                headers={'Accept': 'application/json'},
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
                 params=params,
-                data=body
+                data=json.dumps(body).encode('utf-8')
             )
 
         elif self.type == OperationType.PATCH:
@@ -81,15 +90,18 @@ class Operation():
                 self.endpoint(),
                 headers={'Accept': 'application/json'},
                 params=params,
-                data=body
+                data=json.dumps(body).encode('utf-8')
             )
 
         elif self.type == OperationType.DELETE:
             result = requests.delete(
                 self.endpoint(),
-                headers={'Accept': 'application/json'},
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
                 params=params,
-                data=body
+                data=json.dumps(body).encode('utf-8')
             )
 
         if not result:
