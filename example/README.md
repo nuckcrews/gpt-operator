@@ -27,7 +27,7 @@ A simple FLASK application to simulate an operation
 4. Run the app
 
    ```bash
-   $ python application.py
+   $ python app.py
    ```
 
 Note: This is for testing purposes and should not be deployed to a production environment.

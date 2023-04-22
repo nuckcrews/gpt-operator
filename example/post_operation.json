@@ -1,9 +1,9 @@
 {
     "type": "POST",
-    "name": "Create embedding",
-    "description": "Creates an embedding",
+    "name": "Add Quarterback",
+    "description": "Adds an NFL quarterback to a dataset",
     "url": "http://127.0.0.1:5000",
-    "path": "/create",
+    "path": "/add",
     "schema": {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
@@ -11,18 +11,13 @@
             "body": {
                 "type": "object",
                 "properties": {
-                    "namespace": {
+                    "qb": {
                         "type": "string",
-                        "description": "The namespace of the vector database index"
-                    },
-                    "content": {
-                        "type": "string",
-                        "description": "The content to embed"
+                        "description": "The name of the quarterback"
                     }
                 },
                 "required": [
-                    "namespace",
-                    "content"
+                    "qb"
                 ]
             }
         },
