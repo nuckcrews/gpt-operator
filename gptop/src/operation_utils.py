@@ -4,8 +4,6 @@ from uuid import uuid4
 import pinecone
 from openai.embeddings_utils import get_embedding
 
-index = pinecone.Index(os.getenv("INDEX_NAME"))
-
 
 class Utils():
     """
@@ -13,7 +11,7 @@ class Utils():
     """
 
     @classmethod
-    def create_operation(self, namespace, type, name, description, url, path, schema):
+    def create_operation(self, namespace, type, name, description, url, path, requires_auth, schema):
         """
         Creates an operation, creates an embedding from it, and
         stores it in a vector database.
@@ -21,21 +19,24 @@ class Utils():
         - type: The type of operation
         - url: The url of the operation
         - path: The path to the operation
+        - requires_auth: If the operation requires authentication
         - schema: The schema of the operation
-        - body: The body of the operation
 
         Also writes the operation ID to the `ops_list.txt` file
         """
+
+        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
         id = str(uuid4())
 
         content = "; ".join([
             f"Name: {name}",
-            f"description: {description}",
-            f"type: {type}",
-            f"url: {url}",
-            f"path: {path}",
-            f"schema: {schema}"
+            f"Description: {description}",
+            f"Type: {type}",
+            f"URL: {url}",
+            f"Path: {path}",
+            f"Requires Auth: {requires_auth}",
+            f"Schema: {schema}"
         ])
 
         embedding = get_embedding(content, engine="text-embedding-ada-002")
@@ -47,6 +48,7 @@ class Utils():
             "type": type,
             "url": url,
             "path": path,
+            "auth": requires_auth,
             "schema": json.dumps(json.loads(schema), separators=(',', ': '))
         }
 
@@ -68,6 +70,7 @@ class Utils():
 
         Returns: The operation represented in json
         """
+        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
         result = index.fetch([id], namespace=namespace)
         vectors = result.get('vectors')
@@ -79,7 +82,7 @@ class Utils():
         return vector.get('metadata')
 
     @classmethod
-    def update_operation(self, namespace, id, type, name, description, url, path, schema):
+    def update_operation(self, namespace, id, type, name, description, url, path, requires_auth, schema):
         """
         Updates an existing operation, creates a new embedding, and
         overrides the existing operation in the vector database.
@@ -88,16 +91,20 @@ class Utils():
         - type: The type of operation
         - url: The url of the operation
         - path: The path to the operation
+        - requires_auth: If the operation requires authentication
         - schema: The schema of the operation
         """
 
+        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
+
         content = "; ".join([
             f"Name: {name}",
-            f"description: {description}",
-            f"type: {type}",
-            f"url: {url}",
-            f"path: {path}",
-            f"schema: {schema}"
+            f"Description: {description}",
+            f"Type: {type}",
+            f"URL: {url}",
+            f"Path: {path}",
+            f"Requires Auth: {requires_auth}",
+            f"Schema: {schema}"
         ])
 
         embedding = get_embedding(content, engine="text-embedding-ada-002")
@@ -109,6 +116,7 @@ class Utils():
             "type": type,
             "url": url,
             "path": path,
+            "auth": requires_auth,
             "schema": schema
         }
 
@@ -128,6 +136,8 @@ class Utils():
         Also removes the operation ID from `ops_list.txt` file.
         """
 
+        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
+
         index.delete(ids=[id], namespace=namespace)
 
         with open("ops_list.txt", "r") as input:
@@ -146,6 +156,7 @@ class Utils():
         [DANGEROUS] Deletes an entire namespace of operations.
         - namespace: The namespace in the vector database
         """
+        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
         index.delete(deleteAll='true', namespace=namespace)
         print(f"Deleted: {namespace}")

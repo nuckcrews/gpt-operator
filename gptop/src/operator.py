@@ -5,7 +5,7 @@ from openai.embeddings_utils import get_embedding
 from openai import ChatCompletion
 from .operation import Operation
 from .operation_utils import Utils
-from .utils import llm_response, llm_json, announce
+from .utils import llm_response, llm_json
 
 
 class Operator():
@@ -112,14 +112,14 @@ class Operator():
 
         return llm_json(response)
 
-    def execute(self, operation: Operation, params: any, body: any):
+    def execute(self, operation: Operation, params: any, body: any, auth_token: str=None):
         """
         Executes the provided operation.
 
         Returns: Value from operation
         """
 
-        return operation.execute(params=params, body=body)
+        return operation.execute(params=params, body=body, auth_token=auth_token)
 
     def react(self, prompt: str, operation: Operation, values: str, result: str) -> str:
         """
@@ -144,40 +144,3 @@ class Operator():
         )
 
         return llm_response(response)
-
-    def handle(self, prompt: str):
-        """
-        Asks the operator to find and execute relevant
-        operations based on the provided prompt.
-        - prompt: The prompt the operator should handle
-
-        Returns: The output generated from the executed operation(s)
-        """
-
-        print("Finding operations...")
-        operations = self.find(prompt=prompt)
-        if not operations:
-            print("Found no operations")
-            return
-        print(f"Found {len(operations)} operations")
-
-        print("Picking an operation...")
-        operation = self.pick(prompt=prompt, operations=operations)
-        if not operation:
-            announce("No operation picked")
-            return
-        announce(operation.name, prefix="Picked operation:\n")
-
-        print("Preparing for execution...")
-        data = self.prepare(prompt=prompt, operation=operation)
-        announce(data, prefix="Operation prepared with data:\n")
-
-        print("Executing operation...")
-        result = self.execute(operation=operation, params=data.get(
-            "params"), body=data.get("body"))
-        announce(result, prefix="Execution result:\n")
-
-        print("Reacting to result...")
-        reaction = self.react(prompt=prompt, operation=operation,
-                              values=json.dumps(data), result=result)
-        announce(reaction, "Reaction:\n")

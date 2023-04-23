@@ -13,7 +13,8 @@ class OperationType(str, Enum):
 
 class Operation():
 
-    def __init__(self, id: str, type: OperationType, name: str, description: str, url: str, path: str, schema: any):
+    def __init__(self, id: str, type: OperationType, name: str, description: str,
+                 url: str, path: str, requires_auth: bool, schema: any):
         """
         Holds the properties on an operation prepared for execution
         - id: The identifier of the operation
@@ -22,6 +23,7 @@ class Operation():
         - description: The description of the operation
         - url: The url of the operation
         - path: The path to the operation
+        - requires_auth: If the operation requires authentication
         - schema: The schema of the operation
         """
 
@@ -31,6 +33,7 @@ class Operation():
         self.description = description
         self.url = url
         self.path = path
+        self.requires_auth = requires_auth
         self.schema = schema
 
     def __repr__(self) -> str:
@@ -43,12 +46,12 @@ class Operation():
         """
 
         return Operation(obj['id'], obj['type'], obj['name'], obj['description'],
-                         obj['url'], obj['path'], obj['schema'])
+                         obj['url'], obj['path'], obj['auth'], obj['schema'])
 
     def endpoint(self) -> str:
         return self.url + self.path
 
-    def execute(self, params, body):
+    def execute(self, params, body, auth_token=None):
         """
         Executes the command.
 
@@ -56,57 +59,53 @@ class Operation():
         """
 
         result = None
+        data = json.dumps(body).encode('utf-8')
+
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        if self.requires_auth:
+            headers["Authorization"] = f"Bearer {auth_token}"
 
         if self.type == OperationType.POST:
             result = requests.post(
                 self.endpoint(),
-                headers={
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
+                headers=headers,
                 params=params,
-                data=json.dumps(body).encode('utf-8')
+                data=data
             )
 
         elif self.type == OperationType.GET:
             result = requests.get(
                 self.endpoint(),
-                headers={
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
+                headers=headers,
                 params=params,
-                data=json.dumps(body).encode('utf-8')
+                data=data
             )
 
         elif self.type == OperationType.PUT:
             result = requests.put(
                 self.endpoint(),
-                headers={
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
+                headers=headers,
                 params=params,
-                data=json.dumps(body).encode('utf-8')
+                data=data
             )
 
         elif self.type == OperationType.PATCH:
             result = requests.patch(
                 self.endpoint(),
-                headers={'Accept': 'application/json'},
+                headers=headers,
                 params=params,
-                data=json.dumps(body).encode('utf-8')
+                data=data
             )
 
         elif self.type == OperationType.DELETE:
             result = requests.delete(
                 self.endpoint(),
-                headers={
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
+                headers=headers,
                 params=params,
-                data=json.dumps(body).encode('utf-8')
+                data=data
             )
 
         if not result:

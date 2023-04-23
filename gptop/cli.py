@@ -1,8 +1,9 @@
 import os
 import json
 from PyInquirer import prompt
+from .handler import handle
 from .src.operation_utils import Utils
-from .src.operator import Operator
+from .utils import announce
 
 
 create_command_name = "create_operation"
@@ -46,50 +47,41 @@ def main():
                 description = obj.get("description")
                 url = obj.get("url")
                 path = obj.get("path")
+                auth = obj.get("auth")
                 schema = json.dumps(obj.get("schema"), separators=(',', ': '))
             else:
                 type = prompt_list(
                     'type',
-                    'Type (Select one):', [
-                        'POST',
-                        'GET',
-                        'PUT',
-                        'PATCH',
-                        'DELETE'
-                    ]
+                    'Type (Select one):', ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
                 )
                 name = prompt_string('name', "Name:")
                 description = prompt_string('description', "Description:")
                 url = prompt_string('url', 'URL:')
                 path = prompt_string('path', 'Path:')
+                auth = prompt_confirm('auth', 'Requires Authentication:', False)
                 schema = prompt_string('schema', "Schema:")
 
             Utils.create_operation(namespace, type, name,
-                                   description, url, path, schema)
+                                   description, url, path, auth, schema)
 
         elif command == get_command_name:
             id = prompt_string('id', "Operation ID:")
             result = Utils.get_operation(namespace=namespace, id=id)
 
             if not result:
-                print("Operation does not exist")
+                announce("Operation does not exist")
             else:
-                print(result)
+                announce(result)
 
         elif command == update_command_name:
             id = prompt_string('id', "Operation ID:")
             op = Utils.get_operation(namespace=namespace, id=id)
+            announce(op, "Existing Operation:\n")
 
             if op:
                 type = prompt_list(
                     'type',
-                    'Type (Select one):', [
-                        'POST',
-                        'GET',
-                        'PUT',
-                        'PATCH',
-                        'DELETE'
-                    ],
+                    'Type (Select one):', ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
                     op.get('type')
                 )
                 name = prompt_string('name', "Name:", op.get('name'))
@@ -97,12 +89,13 @@ def main():
                     'description', "Description:", op.get('description'))
                 url = prompt_string('url', 'URL:', op.get('url'))
                 path = prompt_string('path', 'Path:', op.get('path'))
+                auth = prompt_confirm('auth', 'Requires Authentication:', False)
                 schema = prompt_string('schema', "Schema:", op.get('schema'))
 
-                Utils.update_operation(
-                    namespace, id, type, name, description, url, path, schema)
+                Utils.update_operation(namespace, id, type, name,
+                                       description, url, path, auth, schema)
             else:
-                print("Operation does not exist")
+                announce("Operation does not exist")
 
         elif command == remove_command_name:
             id = prompt_string('id', "Operation ID:")
@@ -115,8 +108,7 @@ def main():
 
         elif command == prompt_command_name:
             pmt = prompt_string('pmt', "Prompt:")
-            operator = Operator(namespace=namespace)
-            operator.handle(pmt)
+            handle(namespace, pmt)
 
         keep_going = prompt_confirm('keep_going', 'Do you want to continue?')
 
