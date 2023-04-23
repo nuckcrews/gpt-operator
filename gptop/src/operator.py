@@ -8,9 +8,6 @@ from .operation_utils import Utils
 from .utils import llm_response, llm_json, announce
 
 
-index = pinecone.Index(os.getenv("INDEX_NAME"))
-
-
 class Operator():
 
     def __init__(self, namespace: str) -> None:
@@ -38,6 +35,7 @@ class Operator():
         Returns set[Operation]
         """
 
+        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
         embedding = get_embedding(prompt, engine="text-embedding-ada-002")
 
         result = index.query(

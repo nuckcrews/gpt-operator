@@ -1,14 +1,14 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import os
 import pinecone
 import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
-pinecone.init(
-    api_key=os.getenv("PINECONE_API_KEY"),
-    environment=os.getenv("PINECONE_REGION")
-)
+def configure(openai_key, pinecone_key, pinecone_region, pinecone_index):
+    openai.api_key = openai_key
+
+    pinecone.init(
+        api_key=pinecone_key,
+        environment=pinecone_region
+    )
+
+    os.environ["PINECONE_INDEX"] = pinecone_index
