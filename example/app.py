@@ -20,13 +20,17 @@ def create_quarterback():
         return {"error": "missing `quarterback` argument"}
 
     id = str(uuid4())
+
     qbs = []
-    with open('data.json', mode='w', encoding='utf-8') as qbs_obj:
+    with open('data.json', 'r') as qbs_obj:
+        qbs = json.loads(qbs_obj.read())
+
+    with open('data.json', mode='w', encoding='utf-8') as file:
         qbs.append({
             "id": id,
             "quarterback": quarterback
         })
-        json.dump(qbs, qbs_obj)
+        json.dump(qbs, file)
 
     return {"message": f"QB added with ID: {id}"}, 202
 
