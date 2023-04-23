@@ -30,7 +30,7 @@ class Operator():
 
         return Operation.from_obj(op)
 
-    def find(self, prompt: str) -> list[Operation]:
+    def find(self, prompt: str, top_k: int=3) -> list[Operation]:
         """
         Finds a set operations based on a provided prompt
         - prompt: The prompt to use for the search
@@ -42,7 +42,7 @@ class Operator():
 
         result = index.query(
             vector=embedding,
-            top_k=3,
+            top_k=top_k,
             namespace=self.namespace,
             include_metadata=True
         )
@@ -166,7 +166,7 @@ class Operator():
         print("Picking an operation...")
         operation = self.pick(prompt=prompt, operations=operations)
         if not operation:
-            print("No operation picked")
+            announce("No operation picked")
             return
         announce(operation.name, prefix="Picked operation:\n")
 
