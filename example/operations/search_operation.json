@@ -4,6 +4,7 @@
     "description": "Searches for a quarterback in the dataset",
     "url": "http://127.0.0.1:5000",
     "path": "/search",
+    "auth": false,
     "schema": {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",

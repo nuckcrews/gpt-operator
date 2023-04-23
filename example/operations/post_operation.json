@@ -4,6 +4,7 @@
     "description": "Adds an NFL quarterback to a dataset",
     "url": "http://127.0.0.1:5000",
     "path": "/add",
+    "auth": false,
     "schema": {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
