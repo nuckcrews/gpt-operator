@@ -1,8 +1,8 @@
 import os
 import json
 from PyInquirer import prompt
-from .operation_utils import Utils
-from .operator import Operator
+from .src.operation_utils import Utils
+from .src.operator import Operator
 
 
 create_command_name = "create_operation"
