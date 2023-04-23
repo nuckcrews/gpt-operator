@@ -3,7 +3,7 @@ import pinecone
 import openai
 
 
-def configure(openai_key, pinecone_key, pinecone_region, pinecone_index):
+def init(openai_key, pinecone_key, pinecone_region, pinecone_index):
     openai.api_key = openai_key
 
     pinecone.init(
