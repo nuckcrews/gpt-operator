@@ -3,6 +3,7 @@ import json
 from uuid import uuid4
 import pinecone
 from openai.embeddings_utils import get_embedding
+from .operation import Operation
 
 
 class Utils():
@@ -11,7 +12,8 @@ class Utils():
     """
 
     @classmethod
-    def create_operation(self, namespace, type, name, description, url, path, requires_auth, schema):
+    def create_operation(self, namespace, type, name, description,
+                         url, path, requires_auth, schema):
         """
         Creates an operation, creates an embedding from it, and
         stores it in a vector database.
@@ -23,43 +25,33 @@ class Utils():
         - schema: The schema of the operation
 
         Also writes the operation ID to the `ops_list.txt` file
+
+        Returns: The created operation
         """
 
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
         id = str(uuid4())
 
-        content = "; ".join([
-            f"Name: {name}",
-            f"Description: {description}",
-            f"Type: {type}",
-            f"URL: {url}",
-            f"Path: {path}",
-            f"Requires Auth: {requires_auth}",
-            f"Schema: {schema}"
-        ])
+        operation = Operation(
+            id=id,
+            type=type,
+            name=name,
+            description=description,
+            url=url,
+            path=path,
+            requires_auth=requires_auth,
+            schema=json.dumps(json.loads(schema), separators=(',', ': '))
+        )
 
-        embedding = get_embedding(content, engine="text-embedding-ada-002")
+        embedding = get_embedding(operation.embedding_obj(),
+                                  engine="text-embedding-ada-002")
 
-        op = {
-            "id": id,
-            "name": name,
-            "description": description,
-            "type": type,
-            "url": url,
-            "path": path,
-            "auth": requires_auth,
-            "schema": json.dumps(json.loads(schema), separators=(',', ': '))
-        }
-
-        to_upsert = zip([id], [embedding], [op])
+        to_upsert = zip([id], [embedding], [operation.metadata()])
 
         index.upsert(vectors=list(to_upsert), namespace=namespace)
 
-        print(f"Created operation:\n{op}")
-
-        with open("ops_list.txt", "a") as ops_list:
-            ops_list.write("\n" + id)
+        return operation
 
     @classmethod
     def get_operation(self, namespace: str, id: str):
@@ -68,7 +60,7 @@ class Utils():
         - namespace: The namespace to store the embedding
         - id: The identifier of the operation
 
-        Returns: The operation represented in json
+        Returns: The operation represented
         """
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
@@ -79,10 +71,12 @@ class Utils():
         if not vector:
             return None
 
-        return vector.get('metadata')
+        obj = vector.get('metadata')
+        return Operation.from_obj(obj)
 
     @classmethod
-    def update_operation(self, namespace, id, type, name, description, url, path, requires_auth, schema):
+    def update_operation(self, namespace, id, type, name, description,
+                         url, path, requires_auth, schema):
         """
         Updates an existing operation, creates a new embedding, and
         overrides the existing operation in the vector database.
@@ -93,38 +87,31 @@ class Utils():
         - path: The path to the operation
         - requires_auth: If the operation requires authentication
         - schema: The schema of the operation
+
+        Returns: The updated operation
         """
+
+        operation = Operation(
+            id=id,
+            type=type,
+            name=name,
+            description=description,
+            url=url,
+            path=path,
+            requires_auth=requires_auth,
+            schema=json.dumps(json.loads(schema), separators=(',', ': '))
+        )
 
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        content = "; ".join([
-            f"Name: {name}",
-            f"Description: {description}",
-            f"Type: {type}",
-            f"URL: {url}",
-            f"Path: {path}",
-            f"Requires Auth: {requires_auth}",
-            f"Schema: {schema}"
-        ])
+        embedding = get_embedding(operation.embedding_obj(),
+                                  engine="text-embedding-ada-002")
 
-        embedding = get_embedding(content, engine="text-embedding-ada-002")
-
-        op = {
-            "id": id,
-            "name": name,
-            "description": description,
-            "type": type,
-            "url": url,
-            "path": path,
-            "auth": requires_auth,
-            "schema": schema
-        }
-
-        to_upsert = zip([id], [embedding], [op])
+        to_upsert = zip([id], [embedding], [operation.metadata()])
 
         index.upsert(vectors=list(to_upsert), namespace=namespace)
 
-        print(f"Updated operation: {op}")
+        return operation
 
     @classmethod
     def remove_operation(self, namespace: str, id: str):
@@ -140,16 +127,6 @@ class Utils():
 
         index.delete(ids=[id], namespace=namespace)
 
-        with open("ops_list.txt", "r") as input:
-            with open("temp.txt", "w") as output:
-                for line in input:
-                    if line.strip("\n") != id:
-                        output.write(line)
-
-        os.replace('temp.txt', 'ops_list.txt')
-
-        print(f"Deleted: {id}")
-
     @classmethod
     def remove_namespace(self, namespace: str):
         """
@@ -159,4 +136,3 @@ class Utils():
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
         index.delete(deleteAll='true', namespace=namespace)
-        print(f"Deleted: {namespace}")

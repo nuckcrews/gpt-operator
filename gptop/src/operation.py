@@ -48,6 +48,29 @@ class Operation():
         return Operation(obj['id'], obj['type'], obj['name'], obj['description'],
                          obj['url'], obj['path'], obj['auth'], obj['schema'])
 
+    def metadata(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "type": self.type,
+            "url": self.url,
+            "path": self.path,
+            "auth": self.requires_auth,
+            "schema": self.schema
+        }
+
+    def embedding_obj(self):
+        return "; ".join([
+            f"Name: {self.name}",
+            f"Description: {self.description}",
+            f"Type: {self.type}",
+            f"URL: {self.url}",
+            f"Path: {self.path}",
+            f"Requires Auth: {self.requires_auth}",
+            f"Schema: {self.schema}"
+        ])
+
     def endpoint(self) -> str:
         return self.url + self.path
 
