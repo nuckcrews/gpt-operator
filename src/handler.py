@@ -1,5 +1,5 @@
 import json
-from .src.operator import Operator
+from .gptop.operator import Operator
 from .utils import announce
 
 def handle(namespace: str, prompt: str):

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import gptop.src as gptop
+import src.gptop as gptop
 
 gptop.init(
     openai_key=os.getenv("OPENAI_API_KEY"),

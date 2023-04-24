@@ -1,5 +1,5 @@
 """GPTOperator: Connects GPT to the world"""
-import gptop.cli
+import src.cli
 
 if __name__ == "__main__":
-    gptop.cli.main()
+    src.cli.main()
