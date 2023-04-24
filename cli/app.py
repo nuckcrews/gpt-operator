@@ -1,7 +1,7 @@
 import os
 import json
 from .handler import handle
-from gptop.operation_utils import Utils
+from gptop.operation_utils import OperationUtils
 from .utils import announce, prompt_confirm, prompt_list, prompt_string
 
 
@@ -62,7 +62,7 @@ def main():
                     'auth', 'Requires Authentication:', False)
                 schema = prompt_string('schema', "Schema:")
 
-            op = Utils.create_operation(namespace, type, name,
+            op = OperationUtils.create_operation(namespace, type, name,
                                         description, url, path, auth, schema)
 
             with open("./example/ops_list.txt", "a") as ops_list:
@@ -72,7 +72,7 @@ def main():
 
         elif command == get_command_name:
             id = prompt_string('id', "Operation ID:")
-            result = Utils.get_operation(namespace=namespace, id=id)
+            result = OperationUtils.get_operation(namespace=namespace, id=id)
 
             if not result:
                 announce("Operation does not exist")
@@ -81,7 +81,7 @@ def main():
 
         elif command == update_command_name:
             id = prompt_string('id', "Operation ID:")
-            op = Utils.get_operation(namespace=namespace, id=id)
+            op = OperationUtils.get_operation(namespace=namespace, id=id)
             announce(op, prefix="Existing Operation:\n")
 
             if op:
@@ -100,7 +100,7 @@ def main():
                     'auth', 'Requires Authentication:', op.requires_auth)
                 schema = prompt_string('schema', "Schema:", op.schema)
 
-                op = Utils.update_operation(namespace, id, type, name,
+                op = OperationUtils.update_operation(namespace, id, type, name,
                                             description, url, path, auth, schema)
 
                 announce(op, prefix="Updated operation:\n")
@@ -109,7 +109,7 @@ def main():
 
         elif command == remove_command_name:
             id = prompt_string('id', "Operation ID:")
-            Utils.remove_operation(namespace=namespace, id=id)
+            OperationUtils.remove_operation(namespace=namespace, id=id)
 
             with open("./example/ops_list.txt", "r") as input:
                 with open("./example/temp.txt", "w") as output:
@@ -124,7 +124,7 @@ def main():
         elif command == remove_namespace_command_name:
             confirmed = prompt_confirm('confirmed', 'Are you sure?', False)
             if confirmed:
-                Utils.remove_namespace(namespace=namespace)
+                OperationUtils.remove_namespace(namespace=namespace)
                 announce(namespace, prefix="Deleted: ")
 
         elif command == prompt_command_name:

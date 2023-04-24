@@ -4,8 +4,10 @@ import pinecone
 from openai.embeddings_utils import get_embedding
 from openai import ChatCompletion
 from .operation import Operation
-from .operation_utils import Utils
+from .operation_utils import OperationUtils
 from .utils import llm_response, llm_json
+
+__all__ = ["Operator"]
 
 
 class Operator():
@@ -21,13 +23,13 @@ class Operator():
         Returns: Operation
         """
 
-        op = Utils.get_operation(self.namespace, id)
+        op = OperationUtils.get_operation(self.namespace, id)
         if not op:
             raise ValueError("Operation does not exist")
 
         return Operation.from_obj(op)
 
-    def find(self, prompt: str, top_k: int=3) -> list[Operation]:
+    def find(self, prompt: str, top_k: int = 3) -> list[Operation]:
         """
         Finds a set operations based on a provided prompt
         - prompt: The prompt to use for the search
@@ -69,7 +71,8 @@ class Operator():
                 Given a list of operations, pick one that would best contribute to the user's prompt.
                 """.replace("\n", " ")},
                 {"role": "system", "content": "Output the ID of the operation."},
-                {"role": "user", "content": f"Operations: {json.dumps(clean_ops)}"},
+                {"role": "user",
+                    "content": f"Operations: {json.dumps(clean_ops)}"},
                 {"role": "user", "content": f"Prompt: {prompt}"},
                 {"role": "user", "content": "Output the ID of the operation and nothing more."}
             ],
@@ -112,7 +115,7 @@ class Operator():
 
         return llm_json(response)
 
-    def execute(self, operation: Operation, params: any, body: any, auth_token: str=None):
+    def execute(self, operation: Operation, params: any, body: any, auth_token: str = None):
         """
         Executes the provided operation.
 

@@ -6,7 +6,10 @@ from openai.embeddings_utils import get_embedding
 from .operation import Operation
 
 
-class Utils():
+__all__ = ["OperationUtils"]
+
+
+class OperationUtils():
     """
     A set of utility objects for managing operations
     """

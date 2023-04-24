@@ -2,6 +2,8 @@ import json
 import requests
 from enum import Enum
 
+__all__ = ["OperationType", "Operation"]
+
 
 class OperationType(str, Enum):
     POST = "POST"
