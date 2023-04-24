@@ -18,7 +18,17 @@ GPT Operator (`gptop`) acts as a [call operator](https://en.wikipedia.org/wiki/O
 * Pinecone Vector Database Index
 * OpenAI access to gpt-4
 
-## Setup
+## Installation
+
+Install released version via pip
+
+```bash
+$ pip install gptop
+```
+
+[WARNING] The package is still in Alpha so please be thoughtful before using in production.
+
+## Repository Setup
 
 If you don’t have Python installed, [install it from here](https://www.python.org/downloads/)
 
@@ -53,7 +63,7 @@ If you don’t have Python installed, [install it from here](https://www.python.
 
 7. Add your [Pinecone API key and Region](https://docs.pinecone.io/docs/quickstart) to the newly created `.env` file
 
-## Usage
+## CLI
 
 1. Run the application
 
