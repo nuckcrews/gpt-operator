@@ -1,7 +1,7 @@
 import os
 import json
 from .handler import handle
-from .gptop.operation_utils import Utils
+from gptop.operation_utils import Utils
 from .utils import announce, prompt_confirm, prompt_list, prompt_string
 
 

@@ -4,5 +4,5 @@ then
     echo Installing missing packages...
     pip install -r requirements.txt
 fi
-python -m src $@
+python -m cli $@
 read -p "Press any key to continue..."

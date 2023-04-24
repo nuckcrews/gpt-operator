@@ -5,18 +5,23 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gptop",
-    version="0.0.1",
+    version="0.0.4",
     author="Nick Crews",
     description="Handles communication with GPTs",
+    keywords="gptop GPT operator llm ai",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=setuptools.find_packages('src/gptop'),
+    packages=setuptools.find_packages(exclude=[
+        "tests",
+        "scripts",
+        "example",
+        "cli"
+    ]),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={'': 'src/gptop'},
     python_requires='>=3.6',
     include_package_data=True,
     install_requires=[
