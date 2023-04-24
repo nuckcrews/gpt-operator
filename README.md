@@ -4,6 +4,8 @@
 
 # GPT Operator
 
+[![PyPI version](https://badge.fury.io/py/gptop.svg)](https://badge.fury.io/py/gptop)
+
 **Empower your GPT applications with external operations**
 
 GPT Operator (`gptop`) acts as a [call operator](https://en.wikipedia.org/wiki/Operator_assistance) for your application. Provide `gptop` with a prompt and it will figure out what external operaton you need to fulfill that prompt and optionally execute that operation on your behalf.
