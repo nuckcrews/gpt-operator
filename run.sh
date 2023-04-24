@@ -4,5 +4,5 @@ then
     echo Installing missing packages...
     pip install -r requirements.txt
 fi
-python -m gptop $@
+python -m src $@
 read -p "Press any key to continue..."
