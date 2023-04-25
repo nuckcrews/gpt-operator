@@ -6,7 +6,7 @@ import openai
 __all__ = ["init"]
 
 
-def init(openai_key, pinecone_key, pinecone_region, pinecone_index):
+def init(openai_key, pinecone_key, pinecone_region, pinecone_index, operation_tokens: dict):
     openai.api_key = openai_key
 
     pinecone.init(
@@ -15,3 +15,6 @@ def init(openai_key, pinecone_key, pinecone_region, pinecone_index):
     )
 
     os.environ["PINECONE_INDEX"] = pinecone_index
+
+    for key, value in operation_tokens.items():
+        os.environ[key + "_token"] = value

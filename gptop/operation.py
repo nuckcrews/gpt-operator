@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 from enum import Enum
@@ -37,6 +38,7 @@ class Operation():
         self.path = path
         self.requires_auth = requires_auth
         self.schema = schema
+        self.token = os.getenv(id + "_token")
 
     def __repr__(self) -> str:
         return json.dumps(self.__dict__)
@@ -76,7 +78,7 @@ class Operation():
     def endpoint(self) -> str:
         return self.url + self.path
 
-    def execute(self, params, body, auth_token=None):
+    def execute(self, params, body, headers):
         """
         Executes the command.
 
@@ -85,13 +87,6 @@ class Operation():
 
         result = None
         data = json.dumps(body).encode('utf-8')
-
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-        if self.requires_auth:
-            headers["Authorization"] = f"Bearer {auth_token}"
 
         if self.type == OperationType.POST:
             result = requests.post(

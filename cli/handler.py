@@ -32,7 +32,7 @@ def handle(namespace: str, prompt: str):
 
     print("Executing operation...")
     result = operator.execute(operation=operation, params=data.get(
-        "params"), body=data.get("body"))
+        "params"), body=data.get("body"), headers=data.get("headers"))
     announce(result, prefix="Execution result:\n")
 
     print("Reacting to result...")

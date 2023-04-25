@@ -27,7 +27,7 @@ class Operator():
         if not op:
             raise ValueError("Operation does not exist")
 
-        return Operation.from_obj(op)
+        return op
 
     def find(self, prompt: str, top_k: int = 3) -> list[Operation]:
         """
@@ -103,26 +103,27 @@ class Operator():
             messages=[
                 {"role": "system", "content": """
                 Give an operation with a predefined schema and a user prompt,
-                provide parameter and body values to send to the operation based on the prompt.
+                provide parameter, body, and header values to send to the operation based on the prompt.
                 """.replace("\n", " ")},
+                {"role": "system", "content": "If an authentication token is present, please use it as defined by the schema."},
                 {"role": "system", "content": "Output in JSON format"},
                 {"role": "user", "content": f"Operation: {operation.__dict__}"},
                 {"role": "user", "content": f"Prompt: {prompt}"},
-                {"role": "user", "content": "Output the params and body in JSON format and nothing more."}
+                {"role": "user", "content": "Output the params, body, and header in JSON format and nothing more."}
             ],
             temperature=0.0
         )
 
         return llm_json(response)
 
-    def execute(self, operation: Operation, params: any, body: any, auth_token: str = None):
+    def execute(self, operation: Operation, params: any, body: any, headers: any):
         """
         Executes the provided operation.
 
         Returns: Value from operation
         """
 
-        return operation.execute(params=params, body=body, auth_token=auth_token)
+        return operation.execute(params=params, body=body, headers=headers)
 
     def react(self, prompt: str, operation: Operation, values: str, result: str) -> str:
         """
