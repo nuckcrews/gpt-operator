@@ -71,6 +71,7 @@ class Operator():
                 Given a list of operations, pick one that would best contribute to the user's prompt.
                 """.replace("\n", " ")},
                 {"role": "system", "content": "Output the ID of the operation."},
+                {"role": "system", "content": "If these operations are not needed to fulfill the prompt, return None."},
                 {"role": "user",
                     "content": f"Operations: {json.dumps(clean_ops)}"},
                 {"role": "user", "content": f"Prompt: {prompt}"},

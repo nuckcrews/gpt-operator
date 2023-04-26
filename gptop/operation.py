@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import urllib.request
 from enum import Enum
 
 __all__ = ["OperationType", "Operation"]
@@ -12,6 +13,7 @@ class OperationType(str, Enum):
     PUT = "PUT"
     PATCH = "PATCH"
     DELETE = "DELETE"
+    DOWNLOAD = "DOWNLOAD"
 
 
 class Operation():
@@ -50,10 +52,10 @@ class Operation():
         """
 
         return Operation(obj['id'], obj['type'], obj['name'], obj['description'],
-                         obj['url'], obj['path'], obj['auth'], obj['schema'])
+                         obj.get('url'), obj.get('path'), obj['auth'], obj['schema'])
 
     def metadata(self):
-        return {
+        d = {
             "id": self.id,
             "name": self.name,
             "description": self.description,
@@ -63,6 +65,7 @@ class Operation():
             "auth": self.requires_auth,
             "schema": self.schema
         }
+        return {k: v for k, v in d.items() if v is not None}
 
     def embedding_obj(self):
         return "; ".join([
@@ -87,6 +90,10 @@ class Operation():
 
         result = None
         data = json.dumps(body).encode('utf-8')
+
+        if self.type == OperationType.DOWNLOAD:
+            response = urllib.request.urlopen(params["download_url"])
+            return response.read()
 
         if self.type == OperationType.POST:
             result = requests.post(
