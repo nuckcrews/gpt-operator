@@ -12,6 +12,18 @@ class DownloadOperation():
     def __init__(self, input: any):
         self.download_url = input["download_url"]
 
+    @classmethod
+    def llm_message():
+        return [
+            {"role": "system", "content": """
+                Give a download operation with a predefined schema and a user prompt,
+                provide the download url to download based on the prompt.
+                """.replace("\n", " ")},
+            {"role": "system", "content": "Output in JSON format"},
+            {"role": "system", "content": 'Example: {"download_url": "<URL>"}'},
+            {"role": "user", "content": "Output in JSON format and nothing more."}
+        ]
+
     def execute(self):
         try:
             response = urllib.request.urlopen(self.download_url)

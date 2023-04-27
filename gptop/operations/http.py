@@ -26,6 +26,18 @@ class HTTPOperation():
         self.body = input.get("body")
         self.headers = input.get("headers")
 
+    @classmethod
+    def llm_message():
+        return [
+            {"role": "system", "content": """
+                Give an HTTP operation with a predefined schema and a user prompt,
+                provide parameter, body, and header values to send to the operation based on the prompt.
+                """.replace("\n", " ")},
+            {"role": "system", "content": "If an authentication token is present, please use it as defined by the schema."},
+            {"role": "system", "content": "Output in JSON format"},
+            {"role": "user", "content": "Output the params, body, and header in JSON format and nothing more."}
+        ]
+
     def execute(self):
         result = None
 

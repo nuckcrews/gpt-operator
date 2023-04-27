@@ -99,19 +99,14 @@ class Operator():
         Returns: JSON object with params and body
         """
 
+        messages = operation.llm_message() + [
+            {"role": "user", "content": f"Operation: {operation.__dict__}"},
+            {"role": "user", "content": f"Prompt: {prompt}"}
+        ]
+
         response = ChatCompletion.create(
             model="gpt-4",
-            messages=[
-                {"role": "system", "content": """
-                Give an operation with a predefined schema and a user prompt,
-                provide parameter, body, and header values to send to the operation based on the prompt.
-                """.replace("\n", " ")},
-                {"role": "system", "content": "If an authentication token is present, please use it as defined by the schema."},
-                {"role": "system", "content": "Output in JSON format"},
-                {"role": "user", "content": f"Operation: {operation.__dict__}"},
-                {"role": "user", "content": f"Prompt: {prompt}"},
-                {"role": "user", "content": "Output the params, body, and header in JSON format and nothing more."}
-            ],
+            messages=messages,
             temperature=0.0
         )
 

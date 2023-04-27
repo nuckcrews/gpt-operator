@@ -66,6 +66,14 @@ class Operation():
             f"Schema: {self.schema}"
         ])
 
+    def llm_message(self):
+        if self.type == OperationType.COMMAND:
+            return CommandOperation.llm_message()
+        elif self.type == OperationType.DOWNLOAD:
+            return DownloadOperation.llm_message()
+        elif self.type == OperationType.HTTP:
+            return HTTPOperation.llm_message()
+
     def execute(self, input: any):
         """
         Executes the operations.
