@@ -1,8 +1,9 @@
 {
-    "type": "GET",
+    "type": "HTTP",
     "name": "Quarterback Search",
     "description": "Searches for a quarterback in the dataset",
     "metadata": {
+        "type": "GET",
         "url": "http://127.0.0.1:5000",
         "path": "/search",
         "requires_auth": false

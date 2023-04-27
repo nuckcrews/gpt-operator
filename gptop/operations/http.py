@@ -19,6 +19,7 @@ class HTTPOperation():
     """
 
     def __init__(self, metadata: any, input: any):
+        metadata = json.loads(metadata)
         self.type = metadata["type"]
         self.url = metadata["url"]
         self.path = metadata["path"]
@@ -27,7 +28,7 @@ class HTTPOperation():
         self.headers = input.get("headers")
 
     @classmethod
-    def llm_message():
+    def llm_message(self):
         return [
             {"role": "system", "content": """
                 Give an HTTP operation with a predefined schema and a user prompt,

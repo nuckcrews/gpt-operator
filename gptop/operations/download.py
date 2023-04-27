@@ -13,7 +13,7 @@ class DownloadOperation():
         self.download_url = input["download_url"]
 
     @classmethod
-    def llm_message():
+    def llm_message(self):
         return [
             {"role": "system", "content": """
                 Give a download operation with a predefined schema and a user prompt,

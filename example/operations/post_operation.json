@@ -1,8 +1,9 @@
 {
-    "type": "POST",
+    "type": "HTTP",
     "name": "Add Quarterback",
     "description": "Adds an NFL quarterback to a dataset",
     "metadata": {
+        "type": "POST",
         "url": "http://127.0.0.1:5000",
         "path": "/add",
         "requires_auth": false

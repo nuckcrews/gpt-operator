@@ -9,7 +9,7 @@ create_command_name = "create_operation"
 update_command_name = "update_operation"
 get_command_name = "get_operation"
 remove_command_name = "remove_operation"
-remove_namespace_command_name = "remove_namespace"
+clear_namespace_command_name = "clear_namespace"
 prompt_command_name = "prompt"
 
 
@@ -26,7 +26,7 @@ def main():
                 update_command_name,
                 get_command_name,
                 remove_command_name,
-                remove_namespace_command_name,
+                clear_namespace_command_name,
                 prompt_command_name
             ]
         )
@@ -44,7 +44,7 @@ def main():
                 type = obj.get("type")
                 name = obj.get("name")
                 description = obj.get("description")
-                metadata = obj.get("metadata")
+                metadata = json.dumps(obj.get("metadata"), separators=(',', ': '))
                 schema = json.dumps(obj.get("schema"), separators=(',', ': '))
             else:
                 type = prompt_list(
@@ -119,7 +119,7 @@ def main():
 
             announce(id, prefix="Deleted: ")
 
-        elif command == remove_namespace_command_name:
+        elif command == clear_namespace_command_name:
             confirmed = prompt_confirm('confirmed', 'Are you sure?', False)
             if confirmed:
                 OperationUtils.remove_namespace(namespace=namespace)

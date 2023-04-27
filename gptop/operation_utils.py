@@ -38,7 +38,7 @@ class OperationUtils():
             type=type,
             name=name,
             description=description,
-            metadata=metadata,
+            metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
             schema=json.dumps(json.loads(schema), separators=(',', ': '))
         )
 
@@ -91,7 +91,7 @@ class OperationUtils():
             type=type,
             name=name,
             description=description,
-            metadata=metadata,
+            metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
             schema=json.dumps(json.loads(schema), separators=(',', ': '))
         )
 

@@ -11,7 +11,7 @@ class CommandOperation():
         self.command = input["command"]
 
     @classmethod
-    def llm_message():
+    def llm_message(self):
         return [
             {"role": "system", "content": """
                 Give a CLI command operation with a predefined schema and a user prompt,
