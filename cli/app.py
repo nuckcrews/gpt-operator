@@ -44,26 +44,24 @@ def main():
                 type = obj.get("type")
                 name = obj.get("name")
                 description = obj.get("description")
-                url = obj.get("url")
-                path = obj.get("path")
-                auth = obj.get("auth")
+                metadata = obj.get("metadata")
                 schema = json.dumps(obj.get("schema"), separators=(',', ': '))
             else:
                 type = prompt_list(
                     'type',
                     'Type (Select one):', [
-                        'POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
+                        'COMMAND',
+                        'DOWNLOAD',
+                        'HTTP'
+                    ],
                 )
                 name = prompt_string('name', "Name:")
                 description = prompt_string('description', "Description:")
-                url = prompt_string('url', 'URL:')
-                path = prompt_string('path', 'Path:')
-                auth = prompt_confirm(
-                    'auth', 'Requires Authentication:', False)
+                metadata = prompt_string('metadata', 'Metadata:')
                 schema = prompt_string('schema', "Schema:")
 
-            op = OperationUtils.create_operation(namespace, type, name,
-                                        description, url, path, auth, schema)
+            op = OperationUtils.create_operation(
+                namespace, type, name, description, metadata, schema)
 
             with open("./example/ops_list.txt", "a") as ops_list:
                 ops_list.write("\n" + op.id)
@@ -88,20 +86,20 @@ def main():
                 type = prompt_list(
                     'type',
                     'Type (Select one):', [
-                        'POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
+                        'COMMAND',
+                        'DOWNLOAD',
+                        'HTTP'
+                    ],
                     op.type
                 )
                 name = prompt_string('name', "Name:", op.name)
                 description = prompt_string(
                     'description', "Description:", op.description)
-                url = prompt_string('url', 'URL:', op.url)
-                path = prompt_string('path', 'Path:', op.path)
-                auth = prompt_confirm(
-                    'auth', 'Requires Authentication:', op.requires_auth)
+                metadata = prompt_string('metadata', 'Metadata:', op.metadata)
                 schema = prompt_string('schema', "Schema:", op.schema)
 
                 op = OperationUtils.update_operation(namespace, id, type, name,
-                                            description, url, path, auth, schema)
+                                                     description, metadata, schema)
 
                 announce(op, prefix="Updated operation:\n")
             else:

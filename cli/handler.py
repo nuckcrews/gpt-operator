@@ -2,6 +2,7 @@ import json
 from gptop.operator import Operator
 from .utils import announce
 
+
 def handle(namespace: str, prompt: str):
     """
     Asks the operator to find and execute relevant
@@ -27,15 +28,14 @@ def handle(namespace: str, prompt: str):
     announce(operation.name, prefix="Picked operation:\n")
 
     print("Preparing for execution...")
-    data = operator.prepare(prompt=prompt, operation=operation)
-    announce(data, prefix="Operation prepared with data:\n")
+    input = operator.prepare(prompt=prompt, operation=operation)
+    announce(input, prefix="Operation prepared with input:\n")
 
     print("Executing operation...")
-    result = operator.execute(operation=operation, params=data.get(
-        "params"), body=data.get("body"), headers=data.get("headers"))
+    result = operator.execute(operation=operation, input=input)
     announce(result, prefix="Execution result:\n")
 
     print("Reacting to result...")
     reaction = operator.react(prompt=prompt, operation=operation,
-                          values=json.dumps(data), result=result)
+                              values=json.dumps(input), result=result)
     announce(reaction, "Reaction:\n")
