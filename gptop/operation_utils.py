@@ -15,16 +15,13 @@ class OperationUtils():
     """
 
     @classmethod
-    def create_operation(self, namespace, type, name, description,
-                         url, path, requires_auth, schema):
+    def create_operation(self, namespace, type, name, description, metadata, schema):
         """
         Creates an operation, creates an embedding from it, and
         stores it in a vector database.
         - namespace: The namespace to store the embedding
         - type: The type of operation
-        - url: The url of the operation
-        - path: The path to the operation
-        - requires_auth: If the operation requires authentication
+        - metadata: The predefined metadata of the operation
         - schema: The schema of the operation
 
         Also writes the operation ID to the `ops_list.txt` file
@@ -41,16 +38,14 @@ class OperationUtils():
             type=type,
             name=name,
             description=description,
-            url=url,
-            path=path,
-            requires_auth=requires_auth,
+            metadata=metadata,
             schema=json.dumps(json.loads(schema), separators=(',', ': '))
         )
 
         embedding = get_embedding(operation.embedding_obj(),
                                   engine="text-embedding-ada-002")
 
-        to_upsert = zip([id], [embedding], [operation.metadata()])
+        to_upsert = zip([id], [embedding], [operation.vector_metadata()])
 
         index.upsert(vectors=list(to_upsert), namespace=namespace)
 
@@ -78,17 +73,14 @@ class OperationUtils():
         return Operation.from_obj(obj)
 
     @classmethod
-    def update_operation(self, namespace, id, type, name, description,
-                         url, path, requires_auth, schema):
+    def update_operation(self, namespace, id, type, name, description, metadata, schema):
         """
         Updates an existing operation, creates a new embedding, and
         overrides the existing operation in the vector database.
         - namespace: The namespace to store the embedding
         - id: The identifier of the operation
         - type: The type of operation
-        - url: The url of the operation
-        - path: The path to the operation
-        - requires_auth: If the operation requires authentication
+        - metadata: The predefined metadata of the operation
         - schema: The schema of the operation
 
         Returns: The updated operation
@@ -99,9 +91,7 @@ class OperationUtils():
             type=type,
             name=name,
             description=description,
-            url=url,
-            path=path,
-            requires_auth=requires_auth,
+            metadata=metadata,
             schema=json.dumps(json.loads(schema), separators=(',', ': '))
         )
 
@@ -110,7 +100,7 @@ class OperationUtils():
         embedding = get_embedding(operation.embedding_obj(),
                                   engine="text-embedding-ada-002")
 
-        to_upsert = zip([id], [embedding], [operation.metadata()])
+        to_upsert = zip([id], [embedding], [operation.vector_metadata()])
 
         index.upsert(vectors=list(to_upsert), namespace=namespace)
 

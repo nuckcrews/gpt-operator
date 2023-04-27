@@ -117,14 +117,14 @@ class Operator():
 
         return llm_json(response)
 
-    def execute(self, operation: Operation, params: any, body: any, headers: any):
+    def execute(self, operation: Operation, input: any):
         """
         Executes the provided operation.
 
         Returns: Value from operation
         """
 
-        return operation.execute(params=params, body=body, headers=headers)
+        return operation.execute(input=input)
 
     def react(self, prompt: str, operation: Operation, values: str, result: str) -> str:
         """
