@@ -4,6 +4,7 @@ from enum import Enum
 from .operations.command import CommandOperation
 from .operations.download import DownloadOperation
 from .operations.http import HTTPOperation
+from .utils import llm_response, llm_json
 
 __all__ = ["OperationType", "Operation"]
 
@@ -74,6 +75,14 @@ class Operation():
         elif self.type == OperationType.HTTP:
             return HTTPOperation.llm_message()
 
+    def llm_modifier(self, response):
+        if self.type == OperationType.COMMAND:
+            return llm_response(response)
+        elif self.type == OperationType.DOWNLOAD:
+            return llm_json(response)
+        elif self.type == OperationType.HTTP:
+            return llm_json(response)
+
     def execute(self, input: any):
         """
         Executes the operations.
@@ -86,20 +95,20 @@ class Operation():
                 command_op = CommandOperation(input=input)
                 return command_op.execute()
             except:
-                return None
+                return "Execution failed"
 
         elif self.type == OperationType.DOWNLOAD:
             try:
                 download_op = DownloadOperation(input=input)
                 return download_op.execute()
             except:
-                return None
+                return "Download failed"
 
         elif self.type == OperationType.HTTP:
             try:
                 http_op = HTTPOperation(metadata=self.metadata, input=input)
                 return http_op.execute()
             except:
-                return None
+                return "Operation failed"
 
-        return None
+        return "Did not execute operation"

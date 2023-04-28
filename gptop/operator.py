@@ -110,7 +110,7 @@ class Operator():
             temperature=0.0
         )
 
-        return llm_json(response)
+        return operation.llm_modifier(response)
 
     def execute(self, operation: Operation, input: any):
         """

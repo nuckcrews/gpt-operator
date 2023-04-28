@@ -10,7 +10,7 @@ class CommandOperation():
     """
 
     def __init__(self, input: any):
-        self.command = input["command"]
+        self.command = input
         self.prefix_cmd = "mkdir -p ./tmp_ai && cd ./tmp_ai"
 
     @classmethod
@@ -26,3 +26,4 @@ class CommandOperation():
     def execute(self):
         subprocess.run(self.prefix_cmd + " && " + self.command,
                        shell=True)
+        return f"Executed command: {self.command}"
