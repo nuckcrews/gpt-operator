@@ -1,0 +1,21 @@
+{
+    "type": "COMMAND",
+    "name": "Clone repository",
+    "description": "Clones a git repository to a local directory.",
+    "metadata": {
+        "example": "git clone <GIT_REPOSITORY>"
+    },
+    "schema": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+            "command": {
+                "type": "string",
+                "description": "The full command to execute."
+            }
+        },
+        "required": [
+            "command"
+        ]
+    }
+}

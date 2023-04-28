@@ -1,3 +1,5 @@
+import subprocess
+
 __all__ = ["CommandOperation"]
 
 
@@ -9,6 +11,7 @@ class CommandOperation():
 
     def __init__(self, input: any):
         self.command = input["command"]
+        self.prefix_cmd = "mkdir -p ./tmp_ai && cd ./tmp_ai"
 
     @classmethod
     def llm_message(self):
@@ -21,4 +24,5 @@ class CommandOperation():
         ]
 
     def execute(self):
-        pass
+        subprocess.run(self.prefix_cmd + " && " + self.command,
+                       shell=True)
