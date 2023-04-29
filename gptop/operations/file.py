@@ -32,7 +32,10 @@ class FileOperation():
     def execute(self):
 
         if self.type == FileOperationType.READ:
-            return open(self.path, "r")
+            file = open(self.path, "r")
+            content = file.read()
+            file.close()
+            return content
         elif self.type == FileOperationType.DIRECTORY:
             return os.listdir(self.path)
         elif self.type == FileOperationType.WRITE:

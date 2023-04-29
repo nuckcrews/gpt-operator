@@ -108,11 +108,11 @@ class Operation():
                 return "Download failed"
 
         elif self.type == OperationType.FILE:
-            try:
-                file_op = FileOperation(input=input)
-                return file_op.execute()
-            except:
-                return "Download failed"
+            # try:
+            file_op = FileOperation(input=input)
+            return file_op.execute()
+            # except:
+            #     return "File operation failed"
 
         elif self.type == OperationType.HTTP:
             try:

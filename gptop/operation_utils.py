@@ -106,6 +106,9 @@ class OperationUtils():
 
         return operation
 
+    # def uploadOperations(self, path):
+
+
     @classmethod
     def remove_operation(self, namespace: str, id: str):
         """
