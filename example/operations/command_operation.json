@@ -12,6 +12,10 @@
             "command": {
                 "type": "string",
                 "description": "The full command to execute."
+            },
+            "base_path": {
+                "type": "string",
+                "description": "The path to cd to before command execution."
             }
         },
         "required": [

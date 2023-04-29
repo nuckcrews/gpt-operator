@@ -2,7 +2,7 @@ import os
 import json
 from enum import Enum
 from .operations import CommandOperation, FileOperation, HTTPOperation, DownloadOperation
-from .utils import llm_response, llm_json
+from .utils import llm_json
 
 __all__ = ["OperationType", "Operation"]
 
@@ -78,7 +78,7 @@ class Operation():
 
     def llm_modifier(self, response):
         if self.type == OperationType.COMMAND:
-            return llm_response(response)
+            return llm_json(response)
         elif self.type == OperationType.DOWNLOAD:
             return llm_json(response)
         elif self.type == OperationType.FILE:
