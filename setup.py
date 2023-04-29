@@ -7,6 +7,8 @@ setuptools.setup(
     name="gptop",
     version="0.0.6",
     author="Nick Crews",
+    author_email="nickcrews35@gmail.com",
+    url="https://github.com/ncrews35/gpt-operator",
     description="Handles communication with GPTs",
     keywords="gptop GPT operator llm ai",
     long_description=long_description,
@@ -18,9 +20,15 @@ setuptools.setup(
         "cli"
     ]),
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     python_requires='>=3.6',
     include_package_data=True,
@@ -45,5 +53,16 @@ setuptools.setup(
         "urllib3 >= 1.21.1",
         "openai",
         "pinecone-client",
-    ]
+    ],
+    extras_require={
+        "dev": [
+            "pytest",
+            "pytest-cov",
+            "flake8",
+            "black",
+            "isort",
+            "mypy",
+            "pre-commit",
+        ],
+    },
 )

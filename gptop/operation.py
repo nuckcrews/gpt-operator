@@ -94,31 +94,19 @@ class Operation():
         """
 
         if self.type == OperationType.COMMAND:
-            try:
-                command_op = CommandOperation(input=input)
-                return command_op.execute()
-            except:
-                return "Execution failed"
+            command_op = CommandOperation(input=input)
+            return command_op.execute()
 
         elif self.type == OperationType.DOWNLOAD:
-            try:
-                download_op = DownloadOperation(input=input)
-                return download_op.execute()
-            except:
-                return "Download failed"
+            download_op = DownloadOperation(input=input)
+            return download_op.execute()
 
         elif self.type == OperationType.FILE:
-            # try:
             file_op = FileOperation(input=input)
             return file_op.execute()
-            # except:
-            #     return "File operation failed"
 
         elif self.type == OperationType.HTTP:
-            try:
-                http_op = HTTPOperation(metadata=self.metadata, input=input)
-                return http_op.execute()
-            except:
-                return "Operation failed"
+            http_op = HTTPOperation(metadata=self.metadata, input=input)
+            return http_op.execute()
 
         return "Did not execute operation"
