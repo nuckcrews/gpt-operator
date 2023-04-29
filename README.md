@@ -6,9 +6,9 @@
 
 [![PyPI version](https://badge.fury.io/py/gptop.svg)](https://badge.fury.io/py/gptop)
 
-**Empower your GPT applications with external operations**
+**Enhance your GPT applications with external operations**
 
-GPT Operator (`gptop`) acts as a [call operator](https://en.wikipedia.org/wiki/Operator_assistance) for your application. Provide `gptop` with a prompt and it will figure out what external operaton you need to fulfill that prompt and optionally execute that operation on your behalf.
+GPT Operator (`gptop`) serves as a [call operator](https://en.wikipedia.org/wiki/Operator_assistance) for your application. Simply provide `gptop` with a prompt, and it will determine the required external operation to fulfill the prompt and, if desired, execute that operation on your behalf.
 
 ## Features
 
@@ -22,52 +22,52 @@ GPT Operator (`gptop`) acts as a [call operator](https://en.wikipedia.org/wiki/O
 
 ## Installation
 
-Install released version via pip
+Install the released version via pip:
 
 ```bash
 $ pip install gptop
 ```
 
-[WARNING] The package is still in Alpha so please be thoughtful before using in production.
+[WARNING] The package is currently in Alpha stage, so please exercise caution before using it in production.
 
 ## Repository Setup
 
-If you don’t have Python installed, [install it from here](https://www.python.org/downloads/)
+If you don’t have Python installed, [download it here](https://www.python.org/downloads/).
 
-1. Clone this repository
+1. Clone this repository.
 
-2. Navigate into the project directory
+2. Navigate to the project directory:
 
    ```bash
    $ cd gpt-operator
    ```
 
-3. Create a new virtual environment
+3. Create a new virtual environment:
 
    ```bash
    $ virtualenv virt
    $ source virt/bin/activate
    ```
 
-4. Install the requirements
+4. Install the requirements:
 
    ```bash
    $ pip install -r requirements.txt
    ```
 
-5. Make a copy of the example environment variables file
+5. Make a copy of the example environment variables file:
 
    ```bash
    $ cp .env.example .env
    ```
 
-6. Add your [OpenAI API key](https://beta.openai.com/account/api-keys) to the newly created `.env` file
+6. Add your [OpenAI API key](https://beta.openai.com/account/api-keys) to the newly created `.env` file.
 
-7. Add your [Pinecone API key and Region](https://docs.pinecone.io/docs/quickstart) to the newly created `.env` file
+7. Add your [Pinecone API key and Region](https://docs.pinecone.io/docs/quickstart) to the newly created `.env` file.
 
 ## CLI
 
-1. Run the application
+1. Run the application:
 
     ```bash
     $ ./run.sh
@@ -77,4 +77,4 @@ To set up an operation on your machine, please see the [example](https://github.
 
 ## Contributing
 
-All contributions are welcome! Reach out for more information.
+We are actively looking for new contributors to help improve and expand the GPT Operator repository. All contributions are welcome! Please feel free to reach out for more information on how you can contribute.
