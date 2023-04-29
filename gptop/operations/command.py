@@ -10,7 +10,8 @@ class CommandOperation():
     """
 
     def __init__(self, input: any):
-        self.command = input
+        self.command = input["command"]
+        self.base_directory = input.get("base_directory")
         self.prefix_cmd = "mkdir -p ./tmp_ai && cd ./tmp_ai"
 
     @classmethod
@@ -24,6 +25,12 @@ class CommandOperation():
         ]
 
     def execute(self):
-        subprocess.run(self.prefix_cmd + " && " + self.command,
-                       shell=True)
-        return f"Executed command: {self.command}"
+        if self.base_directory:
+            result = subprocess.run(f"cd {self.base_directory} && " + self.command,
+                                    shell=True,
+                                    stdout=subprocess.PIPE)
+        else:
+            result = subprocess.run(self.command,
+                                    shell=True,
+                                    stdout=subprocess.PIPE)
+        return result.stdout.decode('utf-8')
