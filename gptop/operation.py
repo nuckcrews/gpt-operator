@@ -1,9 +1,7 @@
 import os
 import json
 from enum import Enum
-from .operations.command import CommandOperation
-from .operations.download import DownloadOperation
-from .operations.http import HTTPOperation
+from .operations import CommandOperation, FileOperation, HTTPOperation, DownloadOperation
 from .utils import llm_response, llm_json
 
 __all__ = ["OperationType", "Operation"]
@@ -13,6 +11,7 @@ class OperationType(str, Enum):
     HTTP = "HTTP"
     DOWNLOAD = "DOWNLOAD"
     COMMAND = "COMMAND"
+    FILE = "FILE"
 
 
 class Operation():
@@ -72,6 +71,8 @@ class Operation():
             return CommandOperation.llm_message()
         elif self.type == OperationType.DOWNLOAD:
             return DownloadOperation.llm_message()
+        elif self.type == OperationType.FILE:
+            return FileOperation.llm_message()
         elif self.type == OperationType.HTTP:
             return HTTPOperation.llm_message()
 
@@ -79,6 +80,8 @@ class Operation():
         if self.type == OperationType.COMMAND:
             return llm_response(response)
         elif self.type == OperationType.DOWNLOAD:
+            return llm_json(response)
+        elif self.type == OperationType.FILE:
             return llm_json(response)
         elif self.type == OperationType.HTTP:
             return llm_json(response)
@@ -101,6 +104,13 @@ class Operation():
             try:
                 download_op = DownloadOperation(input=input)
                 return download_op.execute()
+            except:
+                return "Download failed"
+
+        elif self.type == OperationType.FILE:
+            try:
+                file_op = FileOperation(input=input)
+                return file_op.execute()
             except:
                 return "Download failed"
 

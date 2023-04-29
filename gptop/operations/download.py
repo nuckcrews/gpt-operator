@@ -16,7 +16,7 @@ class DownloadOperation():
     def llm_message(self):
         return [
             {"role": "system", "content": """
-                Give a download operation with a predefined schema and a user prompt,
+                Given a download operation with a predefined schema and a user prompt,
                 provide the download url to download based on the prompt.
                 """.replace("\n", " ")},
             {"role": "system", "content": "Output in JSON format"},

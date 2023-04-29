@@ -18,7 +18,7 @@ def handle(namespace: str, prompt: str):
     if not operations:
         print("Found no operations")
         return
-    print(f"Found {len(operations)} operations")
+    announce(f"Found {len(operations)} operations")
 
     print("Picking an operation...")
     operation = operator.pick(prompt=prompt, operations=operations)

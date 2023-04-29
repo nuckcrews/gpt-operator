@@ -17,7 +17,7 @@ class CommandOperation():
     def llm_message(self):
         return [
             {"role": "system", "content": """
-                Give a CLI command operation with a predefined schema and a user prompt,
+                Given a CLI command operation with a predefined schema and a user prompt,
                 provide the command to run in the terminal based on the prompt.
                 """.replace("\n", " ")},
             {"role": "user", "content": "Output the command to run and nothing more."}

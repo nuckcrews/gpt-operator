@@ -31,7 +31,7 @@ class HTTPOperation():
     def llm_message(self):
         return [
             {"role": "system", "content": """
-                Give an HTTP operation with a predefined schema and a user prompt,
+                Given an HTTP operation with a predefined schema and a user prompt,
                 provide parameter, body, and header values to send to the operation based on the prompt.
                 """.replace("\n", " ")},
             {"role": "system", "content": "If an authentication token is present, please use it as defined by the schema."},
