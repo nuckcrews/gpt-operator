@@ -47,47 +47,53 @@ class HTTPOperation():
         if self.body:
             data = json.dumps(self.body).encode('utf-8')
 
-        if self.type == HTTPType.POST:
-            result = requests.post(
-                url=endpoint,
-                headers=self.headers,
-                params=self.params,
-                data=data
-            )
+        try:
+            if self.type == HTTPType.POST:
+                result = requests.post(
+                    url=endpoint,
+                    headers=self.headers,
+                    params=self.params,
+                    data=data
+                )
 
-        elif self.type == HTTPType.GET:
-            result = requests.get(
-                url=endpoint,
-                headers=self.headers,
-                params=self.params,
-                data=data
-            )
+            elif self.type == HTTPType.GET:
+                result = requests.get(
+                    url=endpoint,
+                    headers=self.headers,
+                    params=self.params,
+                    data=data
+                )
 
-        elif self.type == HTTPType.PUT:
-            result = requests.put(
-                url=endpoint,
-                headers=self.headers,
-                params=self.params,
-                data=data
-            )
+            elif self.type == HTTPType.PUT:
+                result = requests.put(
+                    url=endpoint,
+                    headers=self.headers,
+                    params=self.params,
+                    data=data
+                )
 
-        elif self.type == HTTPType.PATCH:
-            result = requests.patch(
-                url=endpoint,
-                headers=self.headers,
-                params=self.params,
-                data=data
-            )
+            elif self.type == HTTPType.PATCH:
+                result = requests.patch(
+                    url=endpoint,
+                    headers=self.headers,
+                    params=self.params,
+                    data=data
+                )
 
-        elif self.type == HTTPType.DELETE:
-            result = requests.delete(
-                url=endpoint,
-                headers=self.headers,
-                params=self.params,
-                data=data
-            )
+            elif self.type == HTTPType.DELETE:
+                result = requests.delete(
+                    url=endpoint,
+                    headers=self.headers,
+                    params=self.params,
+                    data=data
+                )
 
-        if not result:
+            if not result:
+                return None
+
+            result.raise_for_status()
+            return result.json()
+
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while executing the HTTP request: {e}")
             return None
-
-        return result.json()

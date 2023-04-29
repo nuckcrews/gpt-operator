@@ -12,50 +12,60 @@ def quarterback():
 
 @app.route("/add",  methods=['POST'])
 def create_quarterback():
-    data = request.data.decode('utf-8')
-    obj = json.loads(data)
-    quarterback = obj.get('qb')
+    try:
+        data = request.data.decode('utf-8')
+        obj = json.loads(data)
+        quarterback = obj.get('qb')
 
-    if not quarterback:
-        return {"error": "missing `quarterback` argument"}
+        if not quarterback:
+            return {"error": "missing `quarterback` argument"}
 
-    id = str(uuid4())
+        id = str(uuid4())
 
-    qbs = []
-    with open('data.json', 'r') as qbs_obj:
-        qbs = json.loads(qbs_obj.read())
+        qbs = []
+        with open('data.json', 'r') as qbs_obj:
+            qbs = json.loads(qbs_obj.read())
 
-    with open('data.json', mode='w', encoding='utf-8') as file:
-        qbs.append({
-            "id": id,
-            "quarterback": quarterback
-        })
-        json.dump(qbs, file)
+        with open('data.json', mode='w', encoding='utf-8') as file:
+            qbs.append({
+                "id": id,
+                "quarterback": quarterback
+            })
+            json.dump(qbs, file)
 
-    return {"message": f"QB added with ID: {id}"}, 202
+        return {"message": f"QB added with ID: {id}"}, 202
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 @app.route("/get", methods=['GET'])
 def get_quarterback():
-    id = request.args.get("qb")
+    try:
+        id = request.args.get("qb")
 
-    with open('data.json', 'r') as qbs_obj:
-        obj = json.loads(qbs_obj.read())
-        for qb in obj:
-            if qb.get("id") == id:
-                return qb, 200
+        with open('data.json', 'r') as qbs_obj:
+            obj = json.loads(qbs_obj.read())
+            for qb in obj:
+                if qb.get("id") == id:
+                    return qb, 200
+        return {"error": "QB does not exist"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 @app.route("/search", methods=['GET'])
 def search_quarterback():
-    quarterback = request.args.get("qb").lower()
+    try:
+        quarterback = request.args.get("qb").lower()
 
-    with open('data.json', 'r') as qbs_obj:
-        obj = json.loads(qbs_obj.read())
-        for qb in obj:
-            if qb.get("quarterback").lower() == quarterback:
-                return qb, 200
+        with open('data.json', 'r') as qbs_obj:
+            obj = json.loads(qbs_obj.read())
+            for qb in obj:
+                if qb.get("quarterback").lower() == quarterback:
+                    return qb, 200
 
-    return {"error": "QB does not exist"}, 200
+        return {"error": "QB does not exist"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 if __name__ == "__main__":

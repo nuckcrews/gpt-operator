@@ -23,6 +23,9 @@ class Operator():
         Returns: Operation
         """
 
+        if not id:
+            raise ValueError("Operation ID cannot be empty")
+
         op = OperationUtils.get_operation(self.namespace, id)
         if not op:
             raise ValueError("Operation does not exist")
@@ -36,6 +39,9 @@ class Operator():
 
         Returns set[Operation]
         """
+
+        if not prompt:
+            raise ValueError("Prompt cannot be empty")
 
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
         embedding = get_embedding(prompt, engine="text-embedding-ada-002")
@@ -62,6 +68,12 @@ class Operator():
 
         Returns: The identifier of the operation.
         """
+
+        if not prompt:
+            raise ValueError("Prompt cannot be empty")
+
+        if not operations:
+            raise ValueError("Operations list cannot be empty")
 
         clean_ops = [op.__dict__ for op in operations]
         response = ChatCompletion.create(
@@ -99,6 +111,12 @@ class Operator():
         Returns: JSON object with params and body
         """
 
+        if not prompt:
+            raise ValueError("Prompt cannot be empty")
+
+        if not operation:
+            raise ValueError("Operation cannot be empty")
+
         messages = operation.llm_message() + [
             {"role": "user", "content": f"Operation: {operation.__dict__}"},
             {"role": "user", "content": f"Prompt: {prompt}"}
@@ -119,6 +137,9 @@ class Operator():
         Returns: Value from operation
         """
 
+        if not operation:
+            raise ValueError("Operation cannot be empty")
+
         return operation.execute(input=input)
 
     def react(self, prompt: str, operation: Operation, values: str, result: str) -> str:
@@ -128,6 +149,13 @@ class Operator():
 
         Returns: The LLM reaction response
         """
+
+        if not prompt:
+            raise ValueError("Prompt cannot be empty")
+
+        if not operation:
+            raise ValueError("Operation cannot be empty")
+
         response = ChatCompletion.create(
             model="gpt-4",
             messages=[

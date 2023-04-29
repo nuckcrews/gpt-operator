@@ -28,5 +28,12 @@ class DownloadOperation():
         try:
             response = urllib.request.urlopen(self.download_url)
             return response.read()
-        except:
+        except urllib.error.HTTPError as e:
+            print(f"HTTP Error: {e.code} {e.reason}")
+            return None
+        except urllib.error.URLError as e:
+            print(f"URL Error: {e.reason}")
+            return None
+        except Exception as e:
+            print(f"Unexpected Error: {str(e)}")
             return None

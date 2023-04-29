@@ -29,27 +29,31 @@ class OperationUtils():
         Returns: The created operation
         """
 
-        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
+        try:
+            index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        id = str(uuid4())
+            id = str(uuid4())
 
-        operation = Operation(
-            id=id,
-            type=type,
-            name=name,
-            description=description,
-            metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
-            schema=json.dumps(json.loads(schema), separators=(',', ': '))
-        )
+            operation = Operation(
+                id=id,
+                type=type,
+                name=name,
+                description=description,
+                metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
+                schema=json.dumps(json.loads(schema), separators=(',', ': '))
+            )
 
-        embedding = get_embedding(operation.embedding_obj(),
-                                  engine="text-embedding-ada-002")
+            embedding = get_embedding(operation.embedding_obj(),
+                                      engine="text-embedding-ada-002")
 
-        to_upsert = zip([id], [embedding], [operation.vector_metadata()])
+            to_upsert = zip([id], [embedding], [operation.vector_metadata()])
 
-        index.upsert(vectors=list(to_upsert), namespace=namespace)
+            index.upsert(vectors=list(to_upsert), namespace=namespace)
 
-        return operation
+            return operation
+        except Exception as e:
+            print(f"Error creating operation: {e}")
+            return None
 
     @classmethod
     def get_operation(self, namespace: str, id: str):
@@ -60,17 +64,21 @@ class OperationUtils():
 
         Returns: The operation represented
         """
-        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
+        try:
+            index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        result = index.fetch([id], namespace=namespace)
-        vectors = result.get('vectors')
-        vector = vectors.get(id)
+            result = index.fetch([id], namespace=namespace)
+            vectors = result.get('vectors')
+            vector = vectors.get(id)
 
-        if not vector:
+            if not vector:
+                return None
+
+            obj = vector.get('metadata')
+            return Operation.from_obj(obj)
+        except Exception as e:
+            print(f"Error fetching operation: {e}")
             return None
-
-        obj = vector.get('metadata')
-        return Operation.from_obj(obj)
 
     @classmethod
     def update_operation(self, namespace, id, type, name, description, metadata, schema):
@@ -86,28 +94,29 @@ class OperationUtils():
         Returns: The updated operation
         """
 
-        operation = Operation(
-            id=id,
-            type=type,
-            name=name,
-            description=description,
-            metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
-            schema=json.dumps(json.loads(schema), separators=(',', ': '))
-        )
+        try:
+            operation = Operation(
+                id=id,
+                type=type,
+                name=name,
+                description=description,
+                metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
+                schema=json.dumps(json.loads(schema), separators=(',', ': '))
+            )
 
-        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
+            index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        embedding = get_embedding(operation.embedding_obj(),
-                                  engine="text-embedding-ada-002")
+            embedding = get_embedding(operation.embedding_obj(),
+                                      engine="text-embedding-ada-002")
 
-        to_upsert = zip([id], [embedding], [operation.vector_metadata()])
+            to_upsert = zip([id], [embedding], [operation.vector_metadata()])
 
-        index.upsert(vectors=list(to_upsert), namespace=namespace)
+            index.upsert(vectors=list(to_upsert), namespace=namespace)
 
-        return operation
-
-    # def uploadOperations(self, path):
-
+            return operation
+        except Exception as e:
+            print(f"Error updating operation: {e}")
+            return None
 
     @classmethod
     def remove_operation(self, namespace: str, id: str):
@@ -119,9 +128,12 @@ class OperationUtils():
         Also removes the operation ID from `ops_list.txt` file.
         """
 
-        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
+        try:
+            index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        index.delete(ids=[id], namespace=namespace)
+            index.delete(ids=[id], namespace=namespace)
+        except Exception as e:
+            print(f"Error removing operation: {e}")
 
     @classmethod
     def remove_namespace(self, namespace: str):
@@ -129,6 +141,9 @@ class OperationUtils():
         [DANGEROUS] Deletes an entire namespace of operations.
         - namespace: The namespace in the vector database
         """
-        index = pinecone.Index(os.getenv("PINECONE_INDEX"))
+        try:
+            index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        index.delete(deleteAll='true', namespace=namespace)
+            index.delete(deleteAll='true', namespace=namespace)
+        except Exception as e:
+            print(f"Error removing namespace: {e}")

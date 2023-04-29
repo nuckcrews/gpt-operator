@@ -9,11 +9,13 @@
         "properties": {
             "download_url": {
                 "type": "string",
-                "description": "The url to download data from"
+                "description": "The url to download data from",
+                "format": "uri"
             }
         },
         "required": [
             "download_url"
-        ]
+        ],
+        "additionalProperties": false
     }
 }

@@ -35,17 +35,23 @@ def main():
             from_file = prompt_confirm('from_file', "Create from file?")
             if from_file:
                 file_path = prompt_string('file_path', "Path to file:")
-                file = open(file_path, "r")
-                obj = file.read()
-                print(obj)
-                obj = json.loads(obj)
-                file.close()
+                try:
+                    with open(file_path, "r") as file:
+                        obj = file.read()
+                        print(obj)
+                        obj = json.loads(obj)
 
-                type = obj.get("type")
-                name = obj.get("name")
-                description = obj.get("description")
-                metadata = json.dumps(obj.get("metadata"), separators=(',', ': '))
-                schema = json.dumps(obj.get("schema"), separators=(',', ': '))
+                    type = obj.get("type")
+                    name = obj.get("name")
+                    description = obj.get("description")
+                    metadata = json.dumps(obj.get("metadata"), separators=(',', ': '))
+                    schema = json.dumps(obj.get("schema"), separators=(',', ': '))
+                except FileNotFoundError:
+                    announce("File not found. Please try again.")
+                    continue
+                except json.JSONDecodeError:
+                    announce("Invalid JSON format. Please check the file and try again.")
+                    continue
             else:
                 type = prompt_list(
                     'type',

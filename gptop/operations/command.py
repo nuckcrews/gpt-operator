@@ -25,12 +25,20 @@ class CommandOperation():
         ]
 
     def execute(self):
-        if self.base_path:
-            result = subprocess.run(f"cd {self.base_path} && " + self.command,
-                                    shell=True,
-                                    stdout=subprocess.PIPE)
-        else:
-            result = subprocess.run(self.command,
-                                    shell=True,
-                                    stdout=subprocess.PIPE)
-        return result.stdout.decode('utf-8')
+        try:
+            if self.base_path:
+                result = subprocess.run(f"cd {self.base_path} && " + self.command,
+                                        shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        check=True)
+            else:
+                result = subprocess.run(self.command,
+                                        shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        check=True)
+            return result.stdout.decode('utf-8')
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing command: {e}")
+            return e.stderr.decode('utf-8')

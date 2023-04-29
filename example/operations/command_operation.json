@@ -20,6 +20,11 @@
         },
         "required": [
             "command"
-        ]
+        ],
+        "additionalProperties": false,
+        "errorMessages": {
+            "required": "The 'command' property is required.",
+            "additionalProperties": "Invalid property found."
+        }
     }
 }

@@ -4,11 +4,19 @@ import pkg_resources
 
 
 def main():
+    if len(sys.argv) < 2:
+        print("Usage: python check_requirements.py <requirements_file>")
+        sys.exit(1)
+
     requirements_file = sys.argv[1]
-    with open(requirements_file, "r") as f:
-        required_packages = [
-            line.strip().split("#")[0].strip() for line in f.readlines()
-        ]
+    try:
+        with open(requirements_file, "r") as f:
+            required_packages = [
+                line.strip().split("#")[0].strip() for line in f.readlines()
+            ]
+    except FileNotFoundError:
+        print(f"Error: File '{requirements_file}' not found.")
+        sys.exit(1)
 
     installed_packages = [package.key for package in pkg_resources.working_set]
 

@@ -15,7 +15,7 @@
             },
             "type": {
                 "type": "string",
-                "description": "The type of file oration",
+                "description": "The type of file operation",
                 "default": "READ"
             }
         },

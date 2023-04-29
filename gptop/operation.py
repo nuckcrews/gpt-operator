@@ -93,20 +93,25 @@ class Operation():
         Returns: The response provided by the execution API
         """
 
-        if self.type == OperationType.COMMAND:
-            command_op = CommandOperation(input=input)
-            return command_op.execute()
+        try:
+            if self.type == OperationType.COMMAND:
+                command_op = CommandOperation(input=input)
+                return command_op.execute()
 
-        elif self.type == OperationType.DOWNLOAD:
-            download_op = DownloadOperation(input=input)
-            return download_op.execute()
+            elif self.type == OperationType.DOWNLOAD:
+                download_op = DownloadOperation(input=input)
+                return download_op.execute()
 
-        elif self.type == OperationType.FILE:
-            file_op = FileOperation(input=input)
-            return file_op.execute()
+            elif self.type == OperationType.FILE:
+                file_op = FileOperation(input=input)
+                return file_op.execute()
 
-        elif self.type == OperationType.HTTP:
-            http_op = HTTPOperation(metadata=self.metadata, input=input)
-            return http_op.execute()
+            elif self.type == OperationType.HTTP:
+                http_op = HTTPOperation(metadata=self.metadata, input=input)
+                return http_op.execute()
 
-        return "Did not execute operation"
+            else:
+                return "Invalid operation type"
+
+        except Exception as e:
+            return f"Error executing operation: {str(e)}"

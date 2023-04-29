@@ -7,7 +7,7 @@ def llm_response(obj: any) -> str:
 
     try:
         return obj["choices"][0]["message"]["content"]
-    except:
+    except (KeyError, IndexError, TypeError):
         return None
 
 def llm_json(obj: any):
@@ -19,5 +19,5 @@ def llm_json(obj: any):
     try:
         result = obj["choices"][0]["message"]["content"]
         return json.loads(result)
-    except:
+    except (KeyError, IndexError, TypeError, json.JSONDecodeError):
         return None

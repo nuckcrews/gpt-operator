@@ -30,19 +30,22 @@ class FileOperation():
         ]
 
     def execute(self):
-
-        if self.type == FileOperationType.READ:
-            file = open(self.path, "r")
-            content = file.read()
-            file.close()
-            return content
-        elif self.type == FileOperationType.DIRECTORY:
-            return os.listdir(self.path)
-        elif self.type == FileOperationType.WRITE:
-            f = open(self.path, "a")
-            f.write(self.content)
-            f.close()
-            return f"Wrote to file: {self.path}"
-
-
-        return "Could not perform operation"
+        try:
+            if self.type == FileOperationType.READ:
+                with open(self.path, "r") as file:
+                    content = file.read()
+                return content
+            elif self.type == FileOperationType.DIRECTORY:
+                return os.listdir(self.path)
+            elif self.type == FileOperationType.WRITE:
+                with open(self.path, "a") as f:
+                    f.write(self.content)
+                return f"Wrote to file: {self.path}"
+            else:
+                return "Invalid operation type"
+        except FileNotFoundError:
+            return f"File not found: {self.path}"
+        except PermissionError:
+            return f"Permission denied: {self.path}"
+        except Exception as e:
+            return f"An error occurred: {str(e)}"

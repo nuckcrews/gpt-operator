@@ -1,7 +1,11 @@
 import setuptools
+import os
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+try:
+    with open("README.md", "r") as fh:
+        long_description = fh.read()
+except FileNotFoundError:
+    long_description = "Handles communication with GPTs"
 
 setuptools.setup(
     name="gptop",
