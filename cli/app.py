@@ -57,8 +57,8 @@ def main():
                 metadata = prompt_string('metadata', 'Metadata:')
                 schema = prompt_string('schema', "Schema:")
 
-            op = OperationUtils.create_operation(
-                namespace, operation_type, name, description, metadata, schema)
+            op = OperationUtils.create_operation(namespace, operation_type,
+                                                 name, description, metadata, schema)
 
             with open("./example/ops_list.txt", "a") as ops_list:
                 ops_list.write("\n" + op.id)

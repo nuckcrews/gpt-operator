@@ -141,14 +141,14 @@ class Operator():
 
         return operation.llm_modifier(response)
 
-    def execute(self, operation: Operation, input_data: any):
+    def execute(self, operation: Operation, input: any):
         """
         Executes the provided operation.
 
         Returns: Value from operation
         """
 
-        return operation.execute(input=input_data)
+        return operation.execute(input=input)
 
     def react(self, prompt: str, operation: Operation, input_values: str, execution_result: str) -> str:
         """

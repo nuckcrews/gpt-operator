@@ -15,7 +15,7 @@ def home():
 def create_quarterback():
     data = request.data.decode('utf-8')
     obj = json.loads(data)
-    quarterback_name = obj.get('quarterback')
+    quarterback_name = obj.get('name')
 
     if not quarterback_name:
         return {"error": "missing `quarterback` argument"}
@@ -29,7 +29,7 @@ def create_quarterback():
     with open('data.json', mode='w', encoding='utf-8') as file:
         quarterbacks.append({
             "id": qb_id,
-            "quarterback": quarterback_name
+            "name": quarterback_name
         })
         json.dump(quarterbacks, file)
 
@@ -53,12 +53,12 @@ def get_quarterback():
 # Search for a quarterback by name
 @app.route("/search", methods=['GET'])
 def search_quarterback():
-    quarterback_name = request.args.get("quarterback").lower()
+    quarterback_name = request.args.get("name").lower()
 
     with open('data.json', 'r') as qbs_file:
         qb_list = json.loads(qbs_file.read())
         for qb in qb_list:
-            if qb.get("quarterback").lower() == quarterback_name:
+            if qb.get("name").lower() == quarterback_name:
                 return qb, 200
 
     return {"error": "Quarterback not found"}, 404

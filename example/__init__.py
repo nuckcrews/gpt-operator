@@ -1,1 +1,0 @@
-Please provide the content from the file in a codebase that needs to be re-written.
