@@ -5,6 +5,7 @@ from openai.embeddings_utils import get_embedding
 from openai import ChatCompletion
 from .operation import Operation
 from .operation_utils import OperationUtils
+from .factory import create_operation_from_object
 from .utils import llm_response, llm_json
 
 __all__ = ["Operator"]
@@ -29,6 +30,30 @@ class Operator():
 
         return op
 
+    def step(self, prompt: str, completed: list[str]) -> Operation:
+        """
+        Creates a step to execute based on the given prompt
+        - prompt: The prompt to base the step off if
+
+        Returns: The step to take
+        """
+
+        response = ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "user", "content": """
+                Given a prompt and a list of completed steps,
+                create the very next step to take. Be detailed and descriptive.
+                """.replace("\n", " ")},
+                {"role": "user", "content": f"Output just the next step and nothing else."},
+                {"role": "user", "content": f"Prompt: {prompt}"},
+                {"role": "user", "content": f"Completed Steps: {completed}"},
+            ],
+            temperature=0.0
+        )
+
+        return llm_response(response)
+
     def find(self, prompt: str, top_k: int = 3) -> list[Operation]:
         """
         Finds a set operations based on a provided prompt
@@ -49,7 +74,8 @@ class Operator():
 
         operations = []
         for match in result.get('matches'):
-            operations.append(Operation.from_obj(match.get('metadata')))
+            operations.append(
+                create_operation_from_object(match.get('metadata')))
 
         return operations
 
@@ -68,26 +94,29 @@ class Operator():
             model="gpt-4",
             messages=[
                 {"role": "system", "content": """
-                Given a list of operations, pick one that would best contribute to the user's prompt.
+                Given a list of operations, pick the minimum amount of operations that are needed for the prompt.
                 """.replace("\n", " ")},
-                {"role": "system", "content": "Output the ID of the operation."},
+                {"role": "system",
+                    "content": "Output the IDs of the operations in an array."},
                 {"role": "system", "content": "If these operations are not needed to fulfill the prompt, return None."},
                 {"role": "user",
                     "content": f"Operations: {json.dumps(clean_ops)}"},
                 {"role": "user", "content": f"Prompt: {prompt}"},
-                {"role": "user", "content": "Output the ID of the operation and nothing more."}
+                {"role": "user", "content": "Output the list of IDs of the operations in an array and nothing more."}
             ],
             temperature=0.0
         )
 
-        op_id = llm_response(response)
-        operation = None
-        for op in operations:
-            if op.id == op_id:
-                operation = op
-                break
+        op_ids = llm_json(response)
+        if not op_ids:
+            return None
 
-        return operation
+        ops = []
+        for op in operations:
+            if op.id in op_ids:
+                ops.append(op)
+
+        return ops
 
     def prepare(self, prompt: str, operation: Operation):
         """

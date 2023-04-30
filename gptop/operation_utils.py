@@ -3,7 +3,7 @@ import json
 from uuid import uuid4
 import pinecone
 from openai.embeddings_utils import get_embedding
-from .operation import Operation
+from .factory import create_operation, create_operation_from_object
 
 
 __all__ = ["OperationUtils"]
@@ -33,7 +33,7 @@ class OperationUtils():
 
         id = str(uuid4())
 
-        operation = Operation(
+        operation = create_operation(
             id=id,
             type=type,
             name=name,
@@ -70,7 +70,7 @@ class OperationUtils():
             return None
 
         obj = vector.get('metadata')
-        return Operation.from_obj(obj)
+        return create_operation_from_object(obj)
 
     @classmethod
     def update_operation(self, namespace, id, type, name, description, metadata, schema):
@@ -86,7 +86,7 @@ class OperationUtils():
         Returns: The updated operation
         """
 
-        operation = Operation(
+        operation = create_operation(
             id=id,
             type=type,
             name=name,
@@ -107,7 +107,6 @@ class OperationUtils():
         return operation
 
     # def uploadOperations(self, path):
-
 
     @classmethod
     def remove_operation(self, namespace: str, id: str):

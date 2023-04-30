@@ -1,9 +1,8 @@
 import json
 import requests
 from enum import Enum
-
-__all__ = ["HTTPOperation", "HTTPType"]
-
+from gptop.operation import Operation
+from gptop.utils import llm_json
 
 class HTTPType(str, Enum):
     POST = "POST"
@@ -13,21 +12,26 @@ class HTTPType(str, Enum):
     DELETE = "DELETE"
 
 
-class HTTPOperation():
+class HTTP(Operation):
     """
     An operation that executes an HTTP request.
     """
 
-    def __init__(self, metadata: any, input: any):
+    def __init__(self, id: str, type: str, name: str, description: str, metadata: any, schema: any):
+        super().__init__(id, type, name, description, metadata, schema)
         metadata = json.loads(metadata)
-        self.type = metadata["type"]
+        self.req_type = metadata["type"]
         self.url = metadata["url"]
         self.path = metadata["path"]
-        self.params = input.get("params")
-        self.body = input.get("body")
-        self.headers = input.get("headers")
 
     @classmethod
+    def TYPE(self):
+        return "HTTP"
+
+    def llm_modifier(self, response):
+        return llm_json(response)
+
+
     def llm_message(self):
         return [
             {"role": "system", "content": """
@@ -39,51 +43,54 @@ class HTTPOperation():
             {"role": "user", "content": "Output the params, body, and header in JSON format and nothing more."}
         ]
 
-    def execute(self):
+    def execute(self, input: any):
+        params = input.get("params")
+        body = input.get("body")
+        headers = input.get("headers")
         result = None
 
         endpoint = self.url + self.path
         data = None
-        if self.body:
-            data = json.dumps(self.body).encode('utf-8')
+        if body:
+            data = json.dumps(body).encode('utf-8')
 
-        if self.type == HTTPType.POST:
+        if self.req_type == HTTPType.POST:
             result = requests.post(
                 url=endpoint,
-                headers=self.headers,
-                params=self.params,
+                headers=headers,
+                params=params,
                 data=data
             )
 
-        elif self.type == HTTPType.GET:
+        elif self.req_type == HTTPType.GET:
             result = requests.get(
                 url=endpoint,
-                headers=self.headers,
-                params=self.params,
+                headers=headers,
+                params=params,
                 data=data
             )
 
-        elif self.type == HTTPType.PUT:
+        elif self.req_type == HTTPType.PUT:
             result = requests.put(
                 url=endpoint,
-                headers=self.headers,
-                params=self.params,
+                headers=headers,
+                params=params,
                 data=data
             )
 
-        elif self.type == HTTPType.PATCH:
+        elif self.req_type == HTTPType.PATCH:
             result = requests.patch(
                 url=endpoint,
-                headers=self.headers,
-                params=self.params,
+                headers=headers,
+                params=params,
                 data=data
             )
 
-        elif self.type == HTTPType.DELETE:
+        elif self.req_type == HTTPType.DELETE:
             result = requests.delete(
                 url=endpoint,
-                headers=self.headers,
-                params=self.params,
+                headers=headers,
+                params=params,
                 data=data
             )
 

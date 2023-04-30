@@ -1,22 +1,12 @@
-import os
 import json
-from enum import Enum
-from .operations import CommandOperation, FileOperation, HTTPOperation, DownloadOperation
-from .utils import llm_json
+from .utils import llm_response
 
-__all__ = ["OperationType", "Operation"]
-
-
-class OperationType(str, Enum):
-    HTTP = "HTTP"
-    DOWNLOAD = "DOWNLOAD"
-    COMMAND = "COMMAND"
-    FILE = "FILE"
+__all__ = ["Operation"]
 
 
 class Operation():
 
-    def __init__(self, id: str, type: OperationType, name: str, description: str, metadata: any, schema: any):
+    def __init__(self, id: str, type: str, name: str, description: str, metadata: any, schema: any):
         """
         Holds the properties on an operation prepared for execution
         - id: The identifier of the operation
@@ -33,18 +23,13 @@ class Operation():
         self.description = description
         self.metadata = metadata
         self.schema = schema
-        self.auth_token = os.getenv(id + "_token")
 
     def __repr__(self) -> str:
         return json.dumps(self.__dict__)
 
     @classmethod
-    def from_obj(self, obj):
-        """
-        Returns an instance of an operation from a dict object
-        """
-
-        return Operation(obj['id'], obj['type'], obj['name'], obj['description'], obj['metadata'], obj['schema'])
+    def TYPE(self):
+        return "NO_OP"
 
     def vector_metadata(self):
         d = {
@@ -67,24 +52,16 @@ class Operation():
         ])
 
     def llm_message(self):
-        if self.type == OperationType.COMMAND:
-            return CommandOperation.llm_message()
-        elif self.type == OperationType.DOWNLOAD:
-            return DownloadOperation.llm_message()
-        elif self.type == OperationType.FILE:
-            return FileOperation.llm_message()
-        elif self.type == OperationType.HTTP:
-            return HTTPOperation.llm_message()
+        return [
+            {"role": "system", "content": """
+                Given an operation with a predefined schema and a user prompt,
+                provide the data needed to execute the operation based on the prompt.
+                """.replace("\n", " ")},
+            {"role": "user", "content": "Output the data needed and nothing more."}
+        ]
 
     def llm_modifier(self, response):
-        if self.type == OperationType.COMMAND:
-            return llm_json(response)
-        elif self.type == OperationType.DOWNLOAD:
-            return llm_json(response)
-        elif self.type == OperationType.FILE:
-            return llm_json(response)
-        elif self.type == OperationType.HTTP:
-            return llm_json(response)
+        return llm_response(response)
 
     def execute(self, input: any):
         """
@@ -93,20 +70,4 @@ class Operation():
         Returns: The response provided by the execution API
         """
 
-        if self.type == OperationType.COMMAND:
-            command_op = CommandOperation(input=input)
-            return command_op.execute()
-
-        elif self.type == OperationType.DOWNLOAD:
-            download_op = DownloadOperation(input=input)
-            return download_op.execute()
-
-        elif self.type == OperationType.FILE:
-            file_op = FileOperation(input=input)
-            return file_op.execute()
-
-        elif self.type == OperationType.HTTP:
-            http_op = HTTPOperation(metadata=self.metadata, input=input)
-            return http_op.execute()
-
-        return "Did not execute operation"
+        return "No-op"

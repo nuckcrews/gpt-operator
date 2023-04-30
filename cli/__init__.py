@@ -4,11 +4,12 @@ load_dotenv()
 
 import os
 import gptop as gptop
+from .operations.http import HTTP
 
 gptop.init(
     openai_key=os.getenv("OPENAI_API_KEY"),
     pinecone_key=os.getenv("PINECONE_API_KEY"),
     pinecone_region=os.getenv("PINECONE_REGION"),
     pinecone_index=os.getenv("PINECONE_INDEX"),
-    operation_tokens={}
+    operations_types=[HTTP]
 )
