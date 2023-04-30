@@ -14,7 +14,7 @@ dist/
 build/
 *.egg-info/
 
-.DS_STORE
+.DS_Store
 
 .env
 .idea

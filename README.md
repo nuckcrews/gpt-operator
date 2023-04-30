@@ -1,5 +1,5 @@
 <div align="center">
-  <img  src="https://user-images.githubusercontent.com/33267791/233712514-b47aabb4-1821-4f67-8214-33d6fe2d6402.png" alt="GPTOP Logo" />
+  <img src="https://user-images.githubusercontent.com/33267791/233712514-b47aabb4-1821-4f67-8214-33d6fe2d6402.png" alt="GPTOP Logo" />
 </div>
 
 # GPT Operator
@@ -18,7 +18,7 @@ GPT Operator (`gptop`) serves as a [call operator](https://en.wikipedia.org/wiki
 ## Requirements
 
 * Pinecone Vector Database Index
-* OpenAI access to gpt-4
+* OpenAI access to GPT-4
 
 ## Installation
 
@@ -28,7 +28,7 @@ Install the released version via pip:
 $ pip install gptop
 ```
 
-[WARNING] The package is currently in Alpha stage, so please exercise caution before using it in production.
+[WARNING] The package is currently in the Alpha stage, so please exercise caution before using it in production.
 
 ## Repository Setup
 
