@@ -25,12 +25,12 @@ def create_operation_from_object(obj: any) -> Operation:
         obj['schema']
     )
 
-def create_operation(operation_id: str, operation_type: str, name: str, description: str, metadata: any, schema: any) -> Operation:
+def create_operation(id: str, type: str, name: str, description: str, metadata: any, schema: any) -> Operation:
     """
     Create an operation instance based on the provided parameters.
 
-    :param operation_id: The unique identifier of the operation.
-    :param operation_type: The type of the operation.
+    :param id: The unique identifier of the operation.
+    :param type: The type of the operation.
     :param name: The name of the operation.
     :param description: A description of the operation.
     :param metadata: Additional metadata for the operation.
@@ -38,14 +38,14 @@ def create_operation(operation_id: str, operation_type: str, name: str, descript
     :return: An instance of the corresponding operation class.
     """
     for operation_class in allowed_operations:
-        if operation_type == operation_class.TYPE():
+        if type == operation_class.TYPE():
             return operation_class(
-                operation_id,
-                operation_type,
+                id,
+                type,
                 name,
                 description,
                 metadata,
                 schema
             )
 
-    raise ValueError("Tried to create invalid operation type:", operation_type)
+    raise ValueError("Tried to create invalid operation type:", type)
