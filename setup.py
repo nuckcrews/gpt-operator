@@ -1,8 +1,10 @@
 import setuptools
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+# Read the long description from README.md
+with open("README.md", "r") as readme_file:
+    long_description = readme_file.read()
 
+# Configure the package
 setuptools.setup(
     name="gptop",
     version="0.0.7",

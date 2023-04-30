@@ -20,7 +20,7 @@ class HTTP(Operation):
     def __init__(self, id: str, type: str, name: str, description: str, metadata: any, schema: any):
         super().__init__(id, type, name, description, metadata, schema)
         metadata = json.loads(metadata)
-        self.req_type = metadata["type"]
+        self.request_type = metadata["type"]
         self.url = metadata["url"]
         self.path = metadata["path"]
 
@@ -30,7 +30,6 @@ class HTTP(Operation):
 
     def llm_modifier(self, response):
         return llm_json(response)
-
 
     def llm_message(self):
         return [
@@ -47,54 +46,57 @@ class HTTP(Operation):
         params = input.get("params")
         body = input.get("body")
         headers = input.get("headers")
-        result = None
+        response = None
 
         endpoint = self.url + self.path
         data = None
         if body:
             data = json.dumps(body).encode('utf-8')
 
-        if self.req_type == HTTPType.POST:
-            result = requests.post(
+        # Execute the appropriate HTTP request based on the request type
+        if self.request_type == HTTPType.POST:
+            response = requests.post(
                 url=endpoint,
                 headers=headers,
                 params=params,
                 data=data
             )
 
-        elif self.req_type == HTTPType.GET:
-            result = requests.get(
+        elif self.request_type == HTTPType.GET:
+            response = requests.get(
                 url=endpoint,
                 headers=headers,
                 params=params,
                 data=data
             )
 
-        elif self.req_type == HTTPType.PUT:
-            result = requests.put(
+        elif self.request_type == HTTPType.PUT:
+            response = requests.put(
                 url=endpoint,
                 headers=headers,
                 params=params,
                 data=data
             )
 
-        elif self.req_type == HTTPType.PATCH:
-            result = requests.patch(
+        elif self.request_type == HTTPType.PATCH:
+            response = requests.patch(
                 url=endpoint,
                 headers=headers,
                 params=params,
                 data=data
             )
 
-        elif self.req_type == HTTPType.DELETE:
-            result = requests.delete(
+        elif self.request_type == HTTPType.DELETE:
+            response = requests.delete(
                 url=endpoint,
                 headers=headers,
                 params=params,
                 data=data
             )
 
-        if not result:
+        # Return None if no response is received
+        if not response:
             return None
 
-        return result.json()
+        # Return the JSON response
+        return response.json()

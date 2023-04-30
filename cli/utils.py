@@ -1,41 +1,41 @@
 from PyInquirer import prompt
 
-
-def announce(val, prefix: str = ""):
+# Function to print a colored message
+def announce(message, prefix: str = ""):
     cyan = '\033[96m'
     default = '\033[0m'
-    print("{0}{1}{2}{3}".format(prefix, cyan, val, default))
+    print("{0}{1}{2}{3}".format(prefix, cyan, message, default))
 
-
-def prompt_confirm(name, message, default=True):
+# Function to prompt a confirmation question
+def prompt_confirm(question_name, question_message, default=True):
     return prompt(
         {
             'type': 'confirm',
-            'name': name,
-            'message': message,
+            'name': question_name,
+            'message': question_message,
             'default': default
         }
-    ).get(name)
+    ).get(question_name)
 
-
-def prompt_string(name, message, default=None):
+# Function to prompt a string input question
+def prompt_string(question_name, question_message, default=None):
     return prompt(
         {
             'type': 'input',
-            'name': name,
-            'message': message,
+            'name': question_name,
+            'message': question_message,
             'default': default if default else ""
         }
-    ).get(name)
+    ).get(question_name)
 
-
-def prompt_list(name, message, choices, default=None):
+# Function to prompt a list selection question
+def prompt_list(question_name, question_message, choices, default=None):
     return prompt(
         {
             'type': 'list',
-            'name': name,
-            'message': message,
+            'name': question_name,
+            'message': question_message,
             'choices': choices,
             'default': default
         }
-    ).get(name)
+    ).get(question_name)

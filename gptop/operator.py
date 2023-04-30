@@ -16,24 +16,24 @@ class Operator():
     def __init__(self, namespace: str) -> None:
         self.namespace = namespace
 
-    def get(self, id: str) -> Operation:
+    def get(self, operation_id: str) -> Operation:
         """
         Fetches a pre-determined operation
-        - id: The operation identifier
+        - operation_id: The operation identifier
 
         Returns: Operation
         """
 
-        op = OperationUtils.get_operation(self.namespace, id)
-        if not op:
+        operation = OperationUtils.get_operation(self.namespace, operation_id)
+        if not operation:
             raise ValueError("Operation does not exist")
 
-        return op
+        return operation
 
-    def step(self, prompt: str, completed: list[str]) -> Operation:
+    def step(self, prompt: str, completed_steps: list[str]) -> Operation:
         """
         Creates a step to execute based on the given prompt
-        - prompt: The prompt to base the step off if
+        - prompt: The prompt to base the step off of
 
         Returns: The step to take
         """
@@ -47,7 +47,7 @@ class Operator():
                 """.replace("\n", " ")},
                 {"role": "user", "content": f"Output just the next step and nothing else."},
                 {"role": "user", "content": f"Prompt: {prompt}"},
-                {"role": "user", "content": f"Completed Steps: {completed}"},
+                {"role": "user", "content": f"Completed Steps: {completed_steps}"},
             ],
             temperature=0.0
         )
@@ -56,7 +56,7 @@ class Operator():
 
     def find(self, prompt: str, top_k: int = 3) -> list[Operation]:
         """
-        Finds a set operations based on a provided prompt
+        Finds a set of operations based on a provided prompt
         - prompt: The prompt to use for the search
 
         Returns set[Operation]
@@ -89,7 +89,7 @@ class Operator():
         Returns: The identifier of the operation.
         """
 
-        clean_ops = [op.__dict__ for op in operations]
+        clean_operations = [operation.__dict__ for operation in operations]
         response = ChatCompletion.create(
             model="gpt-4",
             messages=[
@@ -100,23 +100,23 @@ class Operator():
                     "content": "Output the IDs of the operations in an array."},
                 {"role": "system", "content": "If these operations are not needed to fulfill the prompt, return None."},
                 {"role": "user",
-                    "content": f"Operations: {json.dumps(clean_ops)}"},
+                    "content": f"Operations: {json.dumps(clean_operations)}"},
                 {"role": "user", "content": f"Prompt: {prompt}"},
                 {"role": "user", "content": "Output the list of IDs of the operations in an array and nothing more."}
             ],
             temperature=0.0
         )
 
-        op_ids = llm_json(response)
-        if not op_ids:
+        operation_ids = llm_json(response)
+        if not operation_ids:
             return None
 
-        ops = []
-        for op in operations:
-            if op.id in op_ids:
-                ops.append(op)
+        selected_operations = []
+        for operation in operations:
+            if operation.id in operation_ids:
+                selected_operations.append(operation)
 
-        return ops
+        return selected_operations
 
     def prepare(self, prompt: str, operation: Operation):
         """
@@ -141,16 +141,16 @@ class Operator():
 
         return operation.llm_modifier(response)
 
-    def execute(self, operation: Operation, input: any):
+    def execute(self, operation: Operation, input_data: any):
         """
         Executes the provided operation.
 
         Returns: Value from operation
         """
 
-        return operation.execute(input=input)
+        return operation.execute(input=input_data)
 
-    def react(self, prompt: str, operation: Operation, values: str, result: str) -> str:
+    def react(self, prompt: str, operation: Operation, input_values: str, execution_result: str) -> str:
         """
         Reacts to the operation execution based on
         the original prompt
@@ -161,13 +161,13 @@ class Operator():
             model="gpt-4",
             messages=[
                 {"role": "system", "content": """
-                Given a the original prompt and the execution result of an operation that followed,
+                Given the original prompt and the execution result of an operation that followed,
                 respond to the prompt based on the execution result.
                 """.replace("\n", " ")},
                 {"role": "user", "content": f"Prompt: {prompt}"},
                 {"role": "user", "content": f"Operation: {operation.__dict__}"},
-                {"role": "user", "content": f"Values passed to operation: {values}"},
-                {"role": "user", "content": f"Execution result: {result}"}
+                {"role": "user", "content": f"Values passed to operation: {input_values}"},
+                {"role": "user", "content": f"Execution result: {execution_result}"}
             ],
             temperature=0.0
         )

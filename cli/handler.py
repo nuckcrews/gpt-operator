@@ -2,7 +2,6 @@ import json
 from gptop.operator import Operator
 from .utils import announce
 
-
 def handle(namespace: str, prompt: str):
     """
     Asks the operator to find and execute relevant
@@ -11,32 +10,32 @@ def handle(namespace: str, prompt: str):
 
     Returns: The output generated from the executed operation(s)
     """
-    operator = Operator(namespace=namespace)
+    operator_instance = Operator(namespace=namespace)
 
     print("Finding operations...")
-    operations = operator.find(prompt=prompt)
-    if not operations:
+    found_operations = operator_instance.find(prompt=prompt)
+    if not found_operations:
         print("Found no operations")
         return
-    announce(f"Found {len(operations)} operations")
+    announce(f"Found {len(found_operations)} operations")
 
     print("Picking an operation...")
-    operations = operator.pick(prompt=prompt, operations=operations)
-    if not operations[0]:
+    selected_operations = operator_instance.pick(prompt=prompt, operations=found_operations)
+    if not selected_operations[0]:
         announce("No operation picked")
         return
-    operation = operations[0]
-    announce(operation.name, prefix="Picked operation:\n")
+    selected_operation = selected_operations[0]
+    announce(selected_operation.name, prefix="Picked operation:\n")
 
     print("Preparing for execution...")
-    input = operator.prepare(prompt=prompt, operation=operation)
-    announce(input, prefix="Operation prepared with input:\n")
+    prepared_input = operator_instance.prepare(prompt=prompt, operation=selected_operation)
+    announce(prepared_input, prefix="Operation prepared with input:\n")
 
     print("Executing operation...")
-    result = operator.execute(operation=operation, input=input)
-    announce(result, prefix="Execution result:\n")
+    execution_result = operator_instance.execute(operation=selected_operation, input=prepared_input)
+    announce(execution_result, prefix="Execution result:\n")
 
     print("Reacting to result...")
-    reaction = operator.react(prompt=prompt, operation=operation,
-                              values=json.dumps(input), result=result)
-    announce(reaction, "Reaction:\n")
+    reaction_result = operator_instance.react(prompt=prompt, operation=selected_operation,
+                              values=json.dumps(prepared_input), result=execution_result)
+    announce(reaction_result, "Reaction:\n")

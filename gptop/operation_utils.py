@@ -15,12 +15,12 @@ class OperationUtils():
     """
 
     @classmethod
-    def create_operation(self, namespace, type, name, description, metadata, schema):
+    def create_operation(cls, namespace, operation_type, name, description, metadata, schema):
         """
-        Creates an operation, creates an embedding from it, and
+        Creates an operation, generates an embedding from it, and
         stores it in a vector database.
         - namespace: The namespace to store the embedding
-        - type: The type of operation
+        - operation_type: The type of operation
         - metadata: The predefined metadata of the operation
         - schema: The schema of the operation
 
@@ -31,11 +31,11 @@ class OperationUtils():
 
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        id = str(uuid4())
+        operation_id = str(uuid4())
 
         operation = create_operation(
-            id=id,
-            type=type,
+            id=operation_id,
+            type=operation_type,
             name=name,
             description=description,
             metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
@@ -45,26 +45,26 @@ class OperationUtils():
         embedding = get_embedding(operation.embedding_obj(),
                                   engine="text-embedding-ada-002")
 
-        to_upsert = zip([id], [embedding], [operation.vector_metadata()])
+        to_upsert = zip([operation_id], [embedding], [operation.vector_metadata()])
 
         index.upsert(vectors=list(to_upsert), namespace=namespace)
 
         return operation
 
     @classmethod
-    def get_operation(self, namespace: str, id: str):
+    def get_operation(cls, namespace: str, operation_id: str):
         """
         Fetches an existing operation from the vector database.
         - namespace: The namespace to store the embedding
-        - id: The identifier of the operation
+        - operation_id: The identifier of the operation
 
         Returns: The operation represented
         """
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        result = index.fetch([id], namespace=namespace)
+        result = index.fetch([operation_id], namespace=namespace)
         vectors = result.get('vectors')
-        vector = vectors.get(id)
+        vector = vectors.get(operation_id)
 
         if not vector:
             return None
@@ -73,13 +73,13 @@ class OperationUtils():
         return create_operation_from_object(obj)
 
     @classmethod
-    def update_operation(self, namespace, id, type, name, description, metadata, schema):
+    def update_operation(cls, namespace, operation_id, operation_type, name, description, metadata, schema):
         """
-        Updates an existing operation, creates a new embedding, and
+        Updates an existing operation, generates a new embedding, and
         overrides the existing operation in the vector database.
         - namespace: The namespace to store the embedding
-        - id: The identifier of the operation
-        - type: The type of operation
+        - operation_id: The identifier of the operation
+        - operation_type: The type of operation
         - metadata: The predefined metadata of the operation
         - schema: The schema of the operation
 
@@ -87,8 +87,8 @@ class OperationUtils():
         """
 
         operation = create_operation(
-            id=id,
-            type=type,
+            id=operation_id,
+            type=operation_type,
             name=name,
             description=description,
             metadata=json.dumps(json.loads(metadata), separators=(',', ': ')),
@@ -100,30 +100,28 @@ class OperationUtils():
         embedding = get_embedding(operation.embedding_obj(),
                                   engine="text-embedding-ada-002")
 
-        to_upsert = zip([id], [embedding], [operation.vector_metadata()])
+        to_upsert = zip([operation_id], [embedding], [operation.vector_metadata()])
 
         index.upsert(vectors=list(to_upsert), namespace=namespace)
 
         return operation
 
-    # def uploadOperations(self, path):
-
     @classmethod
-    def remove_operation(self, namespace: str, id: str):
+    def remove_operation(cls, namespace: str, operation_id: str):
         """
         Removes an existing operation from the vector database.
         - namespace: The namespace to store the embedding
-        - id: The identifier of the operation
+        - operation_id: The identifier of the operation
 
         Also removes the operation ID from `ops_list.txt` file.
         """
 
         index = pinecone.Index(os.getenv("PINECONE_INDEX"))
 
-        index.delete(ids=[id], namespace=namespace)
+        index.delete(ids=[operation_id], namespace=namespace)
 
     @classmethod
-    def remove_namespace(self, namespace: str):
+    def remove_namespace(cls, namespace: str):
         """
         [DANGEROUS] Deletes an entire namespace of operations.
         - namespace: The namespace in the vector database

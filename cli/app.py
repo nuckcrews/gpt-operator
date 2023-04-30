@@ -4,7 +4,7 @@ from .handler import handle
 from gptop.operation_utils import OperationUtils
 from .utils import announce, prompt_confirm, prompt_list, prompt_string
 
-
+# Define command names
 create_command_name = "create_operation"
 update_command_name = "update_operation"
 get_command_name = "get_operation"
@@ -35,19 +35,16 @@ def main():
             from_file = prompt_confirm('from_file', "Create from file?")
             if from_file:
                 file_path = prompt_string('file_path', "Path to file:")
-                file = open(file_path, "r")
-                obj = file.read()
-                print(obj)
-                obj = json.loads(obj)
-                file.close()
+                with open(file_path, "r") as file:
+                    obj = json.load(file)
 
-                type = obj.get("type")
+                operation_type = obj.get("type")
                 name = obj.get("name")
                 description = obj.get("description")
                 metadata = json.dumps(obj.get("metadata"), separators=(',', ': '))
                 schema = json.dumps(obj.get("schema"), separators=(',', ': '))
             else:
-                type = prompt_list(
+                operation_type = prompt_list(
                     'type',
                     'Type (Select one):', [
                         'COMMAND',
@@ -61,7 +58,7 @@ def main():
                 schema = prompt_string('schema', "Schema:")
 
             op = OperationUtils.create_operation(
-                namespace, type, name, description, metadata, schema)
+                namespace, operation_type, name, description, metadata, schema)
 
             with open("./example/ops_list.txt", "a") as ops_list:
                 ops_list.write("\n" + op.id)
@@ -69,8 +66,8 @@ def main():
             announce(op, prefix="Created operation:\n")
 
         elif command == get_command_name:
-            id = prompt_string('id', "Operation ID:")
-            result = OperationUtils.get_operation(namespace=namespace, id=id)
+            operation_id = prompt_string('id', "Operation ID:")
+            result = OperationUtils.get_operation(namespace=namespace, id=operation_id)
 
             if not result:
                 announce("Operation does not exist")
@@ -78,12 +75,12 @@ def main():
                 announce(result, prefix="Operation:\n")
 
         elif command == update_command_name:
-            id = prompt_string('id', "Operation ID:")
-            op = OperationUtils.get_operation(namespace=namespace, id=id)
+            operation_id = prompt_string('id', "Operation ID:")
+            op = OperationUtils.get_operation(namespace=namespace, id=operation_id)
             announce(op, prefix="Existing Operation:\n")
 
             if op:
-                type = prompt_list(
+                operation_type = prompt_list(
                     'type',
                     'Type (Select one):', [
                         'COMMAND',
@@ -98,7 +95,7 @@ def main():
                 metadata = prompt_string('metadata', 'Metadata:', op.metadata)
                 schema = prompt_string('schema', "Schema:", op.schema)
 
-                op = OperationUtils.update_operation(namespace, id, type, name,
+                op = OperationUtils.update_operation(namespace, operation_id, operation_type, name,
                                                      description, metadata, schema)
 
                 announce(op, prefix="Updated operation:\n")
@@ -106,18 +103,18 @@ def main():
                 announce("Operation does not exist")
 
         elif command == remove_command_name:
-            id = prompt_string('id', "Operation ID:")
-            OperationUtils.remove_operation(namespace=namespace, id=id)
+            operation_id = prompt_string('id', "Operation ID:")
+            OperationUtils.remove_operation(namespace=namespace, id=operation_id)
 
             with open("./example/ops_list.txt", "r") as input:
                 with open("./example/temp.txt", "w") as output:
                     for line in input:
-                        if line.strip("\n") != id:
+                        if line.strip("\n") != operation_id:
                             output.write(line)
 
             os.replace('./example/temp.txt', './example/ops_list.txt')
 
-            announce(id, prefix="Deleted: ")
+            announce(operation_id, prefix="Deleted: ")
 
         elif command == clear_namespace_command_name:
             confirmed = prompt_confirm('confirmed', 'Are you sure?', False)
