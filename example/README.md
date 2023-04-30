@@ -1,10 +1,10 @@
 # Example Operations
 
-A simple FLASK application to simulate an operation
+A simple Flask application to simulate an operation
 
 ## Setup
 
-1. Navigate into the subdirectory directory
+1. Navigate into the subdirectory
 
    ```bash
    $ cd example
