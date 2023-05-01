@@ -24,7 +24,8 @@ def prompt_string(question_name, question_message, default=None):
             'type': 'input',
             'name': question_name,
             'message': question_message,
-            'default': default if default else ""
+            'default': default if default else "",
+            'validate': lambda val: len(val) > 0 or "Please enter a non-empty value"  # Added input validation
         }
     ).get(question_name)
 

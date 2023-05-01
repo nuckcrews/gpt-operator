@@ -112,7 +112,8 @@ def main():
                         if line.strip("\n") != operation_id:
                             output.write(line)
 
-            os.replace('./example/temp.txt', './example/ops_list.txt')
+            # Replaced os.replace with os.rename for better compatibility
+            os.rename('./example/temp.txt', './example/ops_list.txt')  # Change made: Replaced os.replace with os.rename
 
             announce(operation_id, prefix="Deleted: ")
 
