@@ -32,11 +32,7 @@ def handle(namespace: str, prompt: str):
     announce(prepared_input, prefix="Operation prepared with input:\n")
 
     print("Executing operation...")
-    # Added input validation to prevent security vulnerabilities
-    if isinstance(prepared_input, dict):
-        execution_result = operator.execute(operation=selected_operation, input=prepared_input)
-    else:
-        raise ValueError("Invalid input format")
+    execution_result = operator.execute(operation=selected_operation, input=prepared_input)
     announce(execution_result, prefix="Execution result:\n")
 
     print("Reacting to result...")
